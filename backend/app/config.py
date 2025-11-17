@@ -1,0 +1,36 @@
+from pydantic_settings import BaseSettings
+from typing import List
+
+class Settings(BaseSettings):
+    # Supabase Configuration
+    supabase_url: str
+    supabase_anon_key: str
+    supabase_service_key: str
+    
+    # Server Configuration
+    port: int = 8000
+    host: str = "0.0.0.0"
+    environment: str = "development"
+    
+    # CORS
+    cors_origins: str = "http://localhost:3000"
+    
+    # JWT Configuration
+    jwt_secret_key: str = "your-secret-key-change-this-in-production-min-32-characters"
+    jwt_algorithm: str = "HS256"
+    jwt_access_token_expire_minutes: int = 30
+    jwt_refresh_token_expire_days: int = 7
+    
+    # OpenAI (AI 분석용)
+    openai_api_key: str = ""
+    openai_model: str = "gpt-4-turbo-preview"
+    
+    class Config:
+        env_file = ".env"
+        case_sensitive = False
+    
+    @property
+    def cors_origins_list(self) -> List[str]:
+        return [origin.strip() for origin in self.cors_origins.split(",")]
+
+settings = Settings()
