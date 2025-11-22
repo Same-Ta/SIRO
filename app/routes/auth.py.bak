@@ -1,0 +1,95 @@
+from fastapi import APIRouter, HTTPException, Header
+from datetime import datetime
+import bcrypt
+from app.database import get_supabase
+from app.schemas import UserCreate, LoginRequest, SuccessResponse
+
+router = APIRouter()
+
+@router.post("/register")
+async def register_user(user: UserCreate):
+    """회원가입"""
+    try:
+        supabase = get_supabase()
+        
+        # 이메일 중복 체크
+        existing = supabase.table("users").select("id").eq("email", user.email).execute()
+        if existing.data:
+            raise HTTPException(status_code=400, detail="이미 존재하는 이메일입니다")
+        
+        # bcrypt로 비밀번호 해싱
+        password_bytes = user.password.encode('utf-8')
+        salt = bcrypt.gensalt()
+        password_hash = bcrypt.hashpw(password_bytes, salt).decode('utf-8')
+        
+        response = supabase.table("users").insert({
+            "email": user.email,
+            "password_hash": password_hash,
+            "name": user.name,
+            "university": user.university,
+            "major": user.major,
+            "profile_image": user.profile_image,
+            "bio": user.bio,
+        }).execute()
+        
+        user_data = response.data[0]
+        
+        return {
+            "success": True,
+            "message": "회원가입이 완료되었습니다",
+            "data": {
+                "user_id": user_data["id"],
+                "email": user_data["email"],
+                "name": user_data["name"]
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/login")
+async def login_user(login_data: LoginRequest):
+    """로그인"""
+    try:
+        supabase = get_supabase()
+        
+        # 이메일로 사용자 조회
+        response = supabase.table("users").select("*").eq("email", login_data.email).execute()
+        
+        if not response.data:
+            raise HTTPException(status_code=401, detail="이메일 또는 비밀번호가 일치하지 않습니다")
+        
+        user = response.data[0]
+        
+        # bcrypt로 비밀번호 검증
+        password_bytes = login_data.password.encode('utf-8')
+        password_hash_bytes = user["password_hash"].encode('utf-8')
+        
+        if not bcrypt.checkpw(password_bytes, password_hash_bytes):
+            raise HTTPException(status_code=401, detail="이메일 또는 비밀번호가 일치하지 않습니다")
+        
+        return {
+            "success": True,
+            "message": "로그인되었습니다",
+            "data": {
+                "user_id": user["id"],
+                "email": user["email"],
+                "name": user["name"],
+                "university": user.get("university"),
+                "major": user.get("major")
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/logout")
+async def logout_user(x_user_id: str = Header(..., alias="x-user-id")):
+    """로그아웃"""
+    # 세션 정리 또는 로그 기록
+    return {
+        "success": True,
+        "message": "로그아웃되었습니다"
+    }
