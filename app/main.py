@@ -6,8 +6,7 @@ from app.routes import (
     auth, users, logs, projects, keywords, 
     evidence, endorsements, portfolios,
     reflections, recommendations, ai,
-    dashboard, search, notifications, upload,
-    activities
+    dashboard, search, notifications, upload
 )
 
 app = FastAPI(
@@ -30,7 +29,6 @@ app.add_middleware(
 # 라우터 등록 (프론트엔드 API 명세서에 맞춰 /api/v1 제거)
 app.include_router(auth.router, prefix="/auth", tags=["인증"])
 app.include_router(users.router, prefix="/users", tags=["사용자 관리"])
-app.include_router(activities.router, tags=["활동 추천 시스템"])  # /api 경로 포함되어 있음
 app.include_router(recommendations.router, prefix="/api/recommendations", tags=["경험 활동 추천"])
 app.include_router(logs.router, prefix="/api/logs", tags=["경험 로그"])
 app.include_router(reflections.router, prefix="/api/reflections", tags=["회고 시스템"])
