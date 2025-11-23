@@ -11,10 +11,14 @@ export default function ReflectionHomePage() {
   const { data: recentReflections } = useQuery({
     queryKey: ['recent-reflections'],
     queryFn: async () => {
-      const response = await fetch('/api/reflections?limit=3', {
-        headers: { 'x-user-id': localStorage.getItem('x-user-id') || '' },
+      const userId = localStorage.getItem('x-user-id') || 'dev-user-default';
+      const response = await fetch('/api/v1/reflections?limit=5', {
+        headers: { 'x-user-id': userId },
       });
-      return response.json();
+      if (!response.ok) return { data: [] };
+      const result = await response.json();
+      // 백엔드가 { data: { reflections: [...] } } 구조로 반환
+      return { data: result.data?.reflections || [] };
     },
   });
 
@@ -22,10 +26,14 @@ export default function ReflectionHomePage() {
   const { data: activeSpaces } = useQuery({
     queryKey: ['active-spaces'],
     queryFn: async () => {
-      const response = await fetch('/api/projects?status=active&limit=4', {
-        headers: { 'x-user-id': localStorage.getItem('x-user-id') || '' },
+      const userId = localStorage.getItem('x-user-id') || 'dev-user-default';
+      const response = await fetch('/api/v1/spaces', {
+        headers: { 'x-user-id': userId },
       });
-      return response.json();
+      if (!response.ok) return { data: [] };
+      const result = await response.json();
+      // 백엔드가 배열을 직접 반환하므로 { data: result }로 래핑
+      return { data: Array.isArray(result) ? result : [] };
     },
   });
 
@@ -33,10 +41,36 @@ export default function ReflectionHomePage() {
   const { data: growthStats } = useQuery({
     queryKey: ['growth-stats'],
     queryFn: async () => {
-      const response = await fetch('/api/reflections/growth-stats', {
-        headers: { 'x-user-id': localStorage.getItem('x-user-id') || '' },
-      });
-      return response.json();
+      try {
+        const userId = localStorage.getItem('x-user-id') || 'dev-user-default';
+        const response = await fetch('/api/v1/reflections/stats', {
+          headers: { 'x-user-id': userId },
+        });
+        if (!response.ok) {
+          // API 실패 시 기본값 반환
+          return {
+            data: {
+              total_reflections: 0,
+              this_week_reflections: 0,
+              streak_days: 0,
+              active_spaces: 0,
+              total_keywords: 0,
+            }
+          };
+        }
+        return response.json();
+      } catch (error) {
+        console.error('Stats fetch failed:', error);
+        return {
+          data: {
+            total_reflections: 0,
+            this_week_reflections: 0,
+            streak_days: 0,
+            active_spaces: 0,
+            total_keywords: 0,
+          }
+        };
+      }
     },
   });
 
@@ -72,22 +106,7 @@ export default function ReflectionHomePage() {
             </div>
           </button>
 
-          <button
-            onClick={() => router.push('/dashboard/spaces/new')}
-            className="card hover:shadow-lg transition-all group text-left"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-[#E8F1FF] rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-[#418CC3] transition-colors">
-                <FileText className="w-7 h-7 text-[#418CC3] group-hover:text-white transition-colors" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-[#1B1C1E] mb-1">
-                  팀 초대
-                </h3>
-                <p className="text-sm text-[#6B6D70]">프로젝트 팀원과 경험을 공유하세요</p>
-              </div>
-            </div>
-          </button>
+          {/* 팀 초대 카드 제거 (요청에 따라) */}
 
           <button
             onClick={() => router.push('/dashboard/reflections/analysis')}
@@ -168,59 +187,63 @@ export default function ReflectionHomePage() {
             </div>
 
             <div className="space-y-4">
-              {recentReflections?.data?.slice(0, 3).map((reflection: any) => (
-                <div
-                  key={reflection.id}
-                  onClick={() =>
-                    router.push(`/dashboard/reflections/${reflection.id}`)
-                  }
-                  className="card hover:shadow-lg transition-all cursor-pointer"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span
-                          className="px-3 py-1 rounded-full text-xs font-medium"
-                          style={{
-                            backgroundColor: '#DDF3EB',
-                            color: '#186D50',
-                          }}
-                        >
-                          {reflection.project_name}
-                        </span>
-                        <span className="text-xs text-[#6B6D70]">
-                          {new Date(
-                            reflection.created_at
-                          ).toLocaleDateString()}
-                        </span>
+              {Array.isArray(recentReflections?.data) && recentReflections.data.length > 0 ? (
+                recentReflections.data.slice(0, 3).map((reflection: any) => (
+                  <div
+                    key={reflection.id}
+                    onClick={() =>
+                      router.push(`/dashboard/reflections/${reflection.id}`)
+                    }
+                    className="card hover:shadow-lg transition-all cursor-pointer"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span
+                            className="px-3 py-1 rounded-full text-xs font-medium"
+                            style={{
+                              backgroundColor: '#DDF3EB',
+                              color: '#186D50',
+                            }}
+                          >
+                            {reflection.space_name || reflection.project_name || '개인 회고'}
+                          </span>
+                          <span className="text-xs text-[#6B6D70]">
+                            {new Date(
+                              reflection.reflection_date || reflection.created_at
+                            ).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <p className="text-sm text-[#1B1C1E] line-clamp-2">
+                          {reflection.content || reflection.ai_feedback || '회고 내용'}
+                        </p>
                       </div>
-                      <p className="text-sm text-[#1B1C1E] line-clamp-2">
-                        {reflection.content}
-                      </p>
+                      {reflection.progress_score && (
+                        <div className="flex-shrink-0 ml-4 w-12 h-12 bg-[#DDF3EB] rounded-lg flex items-center justify-center">
+                          <span className="text-lg font-bold text-[#25A778]">
+                            {reflection.progress_score}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex-shrink-0 ml-4 w-12 h-12 bg-[#DDF3EB] rounded-lg flex items-center justify-center">
-                      <span className="text-lg font-bold text-[#25A778]">
-                        {reflection.progress_score}
-                      </span>
-                    </div>
+                    {reflection.ai_feedback && (
+                      <div className="bg-[#F1F2F3] p-3 rounded-lg">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Sparkles className="w-4 h-4 text-[#25A778]" />
+                          <span className="text-xs font-medium text-[#6B6D70]">
+                            AI 피드백
+                          </span>
+                        </div>
+                        <p className="text-sm text-[#6B6D70] line-clamp-2">
+                          {reflection.ai_feedback}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  {reflection.ai_feedback && (
-                    <div className="bg-[#F1F2F3] p-3 rounded-lg">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Sparkles className="w-4 h-4 text-[#25A778]" />
-                        <span className="text-xs font-medium text-[#6B6D70]">
-                          AI 피드백
-                        </span>
-                      </div>
-                      <p className="text-sm text-[#6B6D70] line-clamp-2">
-                        {reflection.ai_feedback}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ))}
+                ))
+              ) : null}
 
-              {(!recentReflections?.data ||
+              {(!Array.isArray(recentReflections?.data) ||
                 recentReflections.data.length === 0) && (
                 <div className="card text-center py-12">
                   <div className="w-16 h-16 bg-[#F1F2F3] rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -234,11 +257,11 @@ export default function ReflectionHomePage() {
                   </p>
                   <button
                     onClick={() =>
-                      router.push('/dashboard/reflections/templates')
+                      router.push('/dashboard/reflections/chatbot')
                     }
                     className="btn-primary"
                   >
-                    템플릿으로 시작하기
+                    AI 회고 시작하기
                   </button>
                 </div>
               )}
@@ -260,38 +283,40 @@ export default function ReflectionHomePage() {
             </div>
 
             <div className="space-y-3">
-              {activeSpaces?.data?.map((space: any) => (
-                <div
-                  key={space.id}
-                  onClick={() => router.push(`/dashboard/spaces/${space.id}`)}
-                  className="card hover:shadow-lg transition-all cursor-pointer"
-                >
-                  <h3 className="font-semibold text-[#1B1C1E] mb-2">
-                    {space.name}
-                  </h3>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-[#6B6D70]">
-                      팀원 {space.team_size}명
-                    </span>
-                    <span className="text-[#25A778] font-medium">
-                      회고 {space.reflection_count}회
-                    </span>
-                  </div>
-                  {space.next_reflection_due && (
-                    <div className="mt-3 pt-3 border-t border-[#EAEBEC]">
-                      <div className="flex items-center gap-2 text-xs text-[#6B6D70]">
-                        <Clock className="w-4 h-4" />
-                        다음 회고:{' '}
-                        {new Date(
-                          space.next_reflection_due
-                        ).toLocaleDateString()}
-                      </div>
+              {Array.isArray(activeSpaces?.data) && activeSpaces.data.length > 0 ? (
+                activeSpaces.data.map((space: any) => (
+                  <div
+                    key={space.id}
+                    onClick={() => router.push(`/dashboard/spaces/${space.id}`)}
+                    className="card hover:shadow-lg transition-all cursor-pointer"
+                  >
+                    <h3 className="font-semibold text-[#1B1C1E] mb-2">
+                      {space.name}
+                    </h3>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-[#6B6D70]">
+                        팀원 {space.team_size || 1}명
+                      </span>
+                      <span className="text-[#25A778] font-medium">
+                        회고 {space.total_reflections || 0}회
+                      </span>
                     </div>
-                  )}
-                </div>
-              ))}
+                    {space.next_reflection_date && (
+                      <div className="mt-3 pt-3 border-t border-[#EAEBEC]">
+                        <div className="flex items-center gap-2 text-xs text-[#6B6D70]">
+                          <Clock className="w-4 h-4" />
+                          다음 회고:{' '}
+                          {new Date(
+                            space.next_reflection_date
+                          ).toLocaleDateString()}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : null}
 
-              {(!activeSpaces?.data || activeSpaces.data.length === 0) && (
+              {(!Array.isArray(activeSpaces?.data) || activeSpaces.data.length === 0) && (
                 <div className="card text-center py-8">
                   <p className="text-[#6B6D70] mb-4">
                     진행중인 스페이스가 없습니다

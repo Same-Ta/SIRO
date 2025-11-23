@@ -21,7 +21,7 @@ export default function DashboardLayout({
     { href: '/dashboard', label: '내 공고', active: pathname === '/dashboard' },
     { href: '/dashboard/recommendations', label: '추천 활동', active: pathname === '/dashboard/recommendations' },
     { href: '/dashboard/reflection-home', label: '회고 홈', active: pathname === '/dashboard/reflection-home' },
-    { href: '/dashboard/reflections', label: '나의 회고', active: pathname === '/dashboard/reflections' },
+    { href: '/dashboard/reflections', label: '경험 정리', active: pathname === '/dashboard/reflections' },
     { href: '/dashboard/reflections/templates', label: '템플릿', active: pathname === '/dashboard/reflections/templates' },
     { href: '/dashboard/reflections/analysis', label: '성장 분석', active: pathname === '/dashboard/reflections/analysis' },
   ]
@@ -98,7 +98,7 @@ export default function DashboardLayout({
             }`}
           >
             <BookOpen className="w-4 h-4" />
-            <span className="text-sm">나의 회고</span>
+            <span className="text-sm">경험 정리</span>
           </Link>
           <Link
             href="/dashboard/reflections/templates"
