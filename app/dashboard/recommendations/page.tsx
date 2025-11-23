@@ -21,31 +21,37 @@ import {
   CheckCircle
 } from 'lucide-react';
 
-const CareerBot = dynamic(() => import('@/components/CareerBot'), { ssr: false });
+const JobSimulation = dynamic(() => import('@/components/JobSimulation'), { ssr: false });
+const JobResult = dynamic(() => import('@/components/JobResult'), { ssr: false });
 
 const categories = [
   { value: 'all', label: '전체' },
   { value: 'contest', label: '공모전' },
   { value: 'hackathon', label: '해커톤' },
+  { value: 'external_activity', label: '대외활동' },
   { value: 'project', label: '프로젝트' },
   { value: 'club', label: '동아리' },
   { value: 'internship', label: '인턴십' },
+  { value: 'volunteer', label: '봉사활동' },
 ];
 
 const fields = [
   { value: 'all', label: '전체 분야', color: '#6B6D70' },
-  { value: 'IT', label: 'IT/개발', color: '#418CC3' },
-  { value: '기획', label: '기획/전략', color: '#9C6BB3' },
-  { value: '디자인', label: '디자인', color: '#D77B0F' },
   { value: '마케팅', label: '마케팅', color: '#25A778' },
-  { value: '경영', label: '경영/사업', color: '#DC2626' },
+  { value: '전략기획', label: '전략기획', color: '#9C6BB3' },
+  { value: '데이터분석', label: '데이터분석', color: '#418CC3' },
+  { value: '개발', label: '개발', color: '#1971c2' },
+  { value: '디자인', label: '디자인', color: '#D77B0F' },
+  { value: '영업', label: '영업', color: '#DC2626' },
+  { value: '인사', label: '인사', color: '#E67700' },
+  { value: '재무', label: '재무', color: '#2F9E44' },
 ];
 
 const sortOptions = [
+  { value: 'match_score', label: '매칭도순', Icon: Target },
   { value: 'recommended', label: '추천순', Icon: Sparkles },
   { value: 'deadline', label: '마감임박순', Icon: Clock },
   { value: 'popular', label: '인기순', Icon: TrendingUp },
-  { value: 'prize', label: '상금순', Icon: Award },
 ];
 
 interface Activity {
@@ -53,22 +59,205 @@ interface Activity {
   title: string;
   organization: string;
   category: string;
-  type: string;
-  description: string;
-  fields: string[];
+  target_jobs: string[];
   tags: string[];
-  application_end_date: string;
-  prize_money?: number;
-  url: string;
+  description: string;
+  benefits: string[];
+  eligibility: string;
+  start_date?: string;
+  end_date?: string;
+  application_deadline?: string;
+  url?: string;
   image_url?: string;
-  match_score: number;
-  match_reasons: {
-    major_match?: number;
-    keyword_match?: number;
-    interest_match?: number;
-  };
+  location?: string;
+  contact_info?: string;
+  prize_money?: string;
+  view_count: number;
+  bookmark_count: number;
   is_bookmarked: boolean;
-  days_left: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface RecommendedActivity {
+  activity: Activity;
+  match_score: number;
+  match_reasons: string[];
+}
+
+// 목 데이터 생성 함수 (백엔드 API 에러시에만 사용)
+function generateMockActivities(): RecommendedActivity[] {
+  // 빈 배열 반환 - 백엔드 API를 사용하도록 강제
+  return [];
+  
+  /* 기존 목 데이터
+  const mockActivities: RecommendedActivity[] = [
+    {
+      activity: {
+        id: '1',
+        title: '2024 대학생 마케팅 공모전',
+        organization: '한국마케팅협회',
+        category: 'contest',
+        target_jobs: ['마케팅', '전략기획'],
+        tags: ['브랜딩', 'SNS마케팅', '캠페인'],
+        description: 'SNS를 활용한 창의적인 마케팅 캠페인을 기획하고 실행하는 공모전입니다.',
+        benefits: ['상금 500만원', '수료증 발급', '인턴 기회'],
+        eligibility: '전국 대학생',
+        start_date: '2024-10-01',
+        end_date: '2024-12-31',
+        url: 'https://example.com',
+        image_url: '',
+        location: '온라인',
+        contact_info: 'marketing@example.com',
+        prize_money: '5,000,000원',
+        view_count: 1250,
+        bookmark_count: 89,
+        is_bookmarked: false,
+        created_at: '2024-10-01',
+        updated_at: '2024-10-01'
+      },
+      match_score: 0.92,
+      match_reasons: ['전공 일치', '관심사 부합', '경험 수준 적합']
+    },
+    {
+      activity: {
+        id: '2',
+        title: 'AI 해커톤 2024',
+        organization: '테크 스타트업 연합',
+        category: 'hackathon',
+        target_jobs: ['개발', '데이터분석'],
+        tags: ['AI', '머신러닝', '팀프로젝트'],
+        description: '48시간 동안 AI 기술을 활용한 서비스를 개발하는 해커톤입니다.',
+        benefits: ['상금 1000만원', '네트워킹', '취업 연계'],
+        eligibility: '개발자, 기획자, 디자이너',
+        start_date: '2024-11-15',
+        end_date: '2024-11-30',
+        url: 'https://example.com',
+        image_url: '',
+        location: '서울 강남구',
+        contact_info: 'hackathon@example.com',
+        prize_money: '10,000,000원',
+        view_count: 2340,
+        bookmark_count: 156,
+        is_bookmarked: false,
+        created_at: '2024-10-15',
+        updated_at: '2024-10-15'
+      },
+      match_score: 0.88,
+      match_reasons: ['기술 스택 일치', '팀 프로젝트 경험 보유']
+    },
+    {
+      activity: {
+        id: '3',
+        title: '데이터 분석 스터디',
+        organization: '대학생 연합 동아리',
+        category: 'club',
+        target_jobs: ['데이터분석', '전략기획'],
+        tags: ['Python', '데이터시각화', '통계'],
+        description: '매주 데이터 분석 프로젝트를 진행하며 실무 역량을 키우는 스터디입니다.',
+        benefits: ['프로젝트 경험', '포트폴리오 구축', '네트워킹'],
+        eligibility: '데이터 분석에 관심있는 대학생',
+        start_date: '2024-11-01',
+        end_date: '2025-02-28',
+        url: 'https://example.com',
+        image_url: '',
+        location: '온라인',
+        contact_info: 'study@example.com',
+        prize_money: '',
+        view_count: 890,
+        bookmark_count: 67,
+        is_bookmarked: false,
+        created_at: '2024-10-20',
+        updated_at: '2024-10-20'
+      },
+      match_score: 0.85,
+      match_reasons: ['학습 방향 일치', '시간 투자 가능']
+    },
+    {
+      activity: {
+        id: '4',
+        title: 'UX/UI 디자인 챌린지',
+        organization: '디자인 협회',
+        category: 'contest',
+        target_jobs: ['디자인', '전략기획'],
+        tags: ['UX', 'UI', '프로토타입'],
+        description: '사용자 중심의 혁신적인 서비스 디자인을 제안하는 공모전입니다.',
+        benefits: ['상금 300만원', '포트폴리오 리뷰', '멘토링'],
+        eligibility: '디자인 전공 대학생',
+        start_date: '2024-11-01',
+        end_date: '2024-12-15',
+        url: 'https://example.com',
+        image_url: '',
+        location: '온라인',
+        contact_info: 'design@example.com',
+        prize_money: '3,000,000원',
+        view_count: 1560,
+        bookmark_count: 112,
+        is_bookmarked: false,
+        created_at: '2024-10-25',
+        updated_at: '2024-10-25'
+      },
+      match_score: 0.78,
+      match_reasons: ['창의성 요구', '포트폴리오 구축 기회']
+    },
+    {
+      activity: {
+        id: '5',
+        title: '소셜벤처 창업 경진대회',
+        organization: '사회혁신재단',
+        category: 'project',
+        target_jobs: ['전략기획', '영업'],
+        tags: ['창업', '소셜임팩트', '비즈니스모델'],
+        description: '사회 문제를 해결하는 비즈니스 아이디어를 발굴하고 실행하는 프로그램입니다.',
+        benefits: ['시드머니 지원', '멘토링', '사무공간 제공'],
+        eligibility: '예비 창업자',
+        start_date: '2024-11-10',
+        end_date: '2025-01-31',
+        url: 'https://example.com',
+        image_url: '',
+        location: '서울 마포구',
+        contact_info: 'venture@example.com',
+        prize_money: '20,000,000원',
+        view_count: 1890,
+        bookmark_count: 134,
+        is_bookmarked: false,
+        created_at: '2024-10-28',
+        updated_at: '2024-10-28'
+      },
+      match_score: 0.82,
+      match_reasons: ['기획력 활용', '팀워크 경험']
+    },
+    {
+      activity: {
+        id: '6',
+        title: '글로벌 인턴십 프로그램',
+        organization: '글로벌 기업 연합',
+        category: 'internship',
+        target_jobs: ['마케팅', '영업', '인사'],
+        tags: ['해외인턴', '글로벌', '실무경험'],
+        description: '글로벌 기업에서 3개월간 실무 경험을 쌓는 인턴십 프로그램입니다.',
+        benefits: ['급여 지원', '숙소 제공', '정규직 전환 기회'],
+        eligibility: '영어 가능한 대학생 및 졸업생',
+        start_date: '2024-12-01',
+        end_date: '2025-03-31',
+        url: 'https://example.com',
+        image_url: '',
+        location: '해외',
+        contact_info: 'intern@example.com',
+        prize_money: '',
+        view_count: 3450,
+        bookmark_count: 278,
+        is_bookmarked: false,
+        created_at: '2024-11-01',
+        updated_at: '2024-11-01'
+      },
+      match_score: 0.91,
+      match_reasons: ['실무 경험 기회', '글로벌 역량 강화', '취업 연계']
+    }
+  ];
+
+  return mockActivities;
+  */
 }
 
 export default function RecommendationsPage() {
@@ -77,50 +266,125 @@ export default function RecommendationsPage() {
   
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedField, setSelectedField] = useState('all');
-  const [sortBy, setSortBy] = useState('recommended');
+  const [sortBy, setSortBy] = useState('match_score');
   const [searchQuery, setSearchQuery] = useState('');
-  const [showCareerBot, setShowCareerBot] = useState(false);
+  const [showSimulation, setShowSimulation] = useState(false);
+  const [simulationResult, setSimulationResult] = useState<any>(null);
+  const [showResult, setShowResult] = useState(false);
 
   // 활동 목록 조회
-  const { data: activitiesData, isLoading } = useQuery({
+  const { data: activitiesData, isLoading, error } = useQuery({
     queryKey: ['recommendations', selectedCategory, selectedField, sortBy, searchQuery],
     queryFn: async () => {
-      const params = new URLSearchParams();
-      if (selectedCategory !== 'all') params.append('category', selectedCategory);
-      if (selectedField !== 'all') params.append('fields', selectedField);
-      params.append('sort', sortBy);
-      params.append('limit', '20');
-      if (searchQuery) params.append('search', searchQuery);
+      try {
+        const params = new URLSearchParams();
+        if (selectedCategory !== 'all') params.append('category', selectedCategory);
+        if (selectedField !== 'all') params.append('field', selectedField);
+        params.append('sort', sortBy);
+        params.append('limit', '60');  // 백엔드의 60개 데이터 모두 가져오기
+        if (searchQuery) params.append('search', searchQuery);
 
-      const response = await fetch(`/api/recommendations/activities?${params}`, {
-        headers: {
-          'x-user-id': localStorage.getItem('x-user-id') || '',
-        },
-      });
-      return response.json();
+        const accessToken = localStorage.getItem('accessToken');
+        const userId = localStorage.getItem('userId');
+        
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+        };
+
+        if (accessToken) {
+          headers['Authorization'] = `Bearer ${accessToken}`;
+        } else if (userId) {
+          headers['x-user-id'] = userId;
+        }
+
+        console.log('🔍 Fetching activities from:', `http://localhost:8000/api/recommendations/activities?${params}`);
+        console.log('📋 Headers:', headers);
+
+        // 먼저 /api/activities 경로 시도
+        let url = `http://localhost:8000/api/activities?${params}`;
+        let response = await fetch(url, { headers });
+        
+        // 404면 /api/recommendations/activities 시도
+        if (response.status === 404) {
+          console.log('⚠️ /api/activities 404, trying /api/recommendations/activities...');
+          url = `http://localhost:8000/api/recommendations/activities?${params}`;
+          response = await fetch(url, { headers });
+        }
+        
+        console.log('📡 Final URL:', url);
+        
+        console.log('📡 Response status:', response.status);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ API Error:', errorText);
+          throw new Error(`백엔드 API 오류: ${response.status}. 백엔드 서버를 확인하세요.`);
+        }
+        
+        const data = await response.json();
+        console.log('✅ API Response:', data);
+        console.log('📊 Activities count:', data?.data?.activities?.length || 0);
+        
+        return data;
+      } catch (err) {
+        console.error('❌ Fetch error:', err);
+        throw err;
+      }
     },
+    retry: 1,
   });
 
   // 북마크 토글
   const bookmarkMutation = useMutation({
     mutationFn: async ({ activityId, isBookmarked }: { activityId: string; isBookmarked: boolean }) => {
       const method = isBookmarked ? 'DELETE' : 'POST';
-      const response = await fetch(`/api/recommendations/activities/${activityId}/bookmark`, {
+      
+      const accessToken = localStorage.getItem('accessToken');
+      const userId = localStorage.getItem('userId');
+      
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      } else if (userId) {
+        headers['x-user-id'] = userId;
+      }
+      
+      const response = await fetch(`http://localhost:8000/api/activities/${activityId}/bookmark`, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-id': localStorage.getItem('x-user-id') || '',
-        },
+        headers,
       });
+      
+      if (!response.ok) {
+        throw new Error('북마크 처리에 실패했습니다');
+      }
+      
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recommendations'] });
       toast.success('북마크가 업데이트되었습니다');
     },
+    onError: () => {
+      toast.error('북마크 처리에 실패했습니다');
+    },
   });
 
-  const activities: Activity[] = activitiesData?.data?.activities || [];
+  const recommendedActivities: RecommendedActivity[] = activitiesData?.data?.activities || [];
+  
+  console.log('🎯 Parsed recommendedActivities:', recommendedActivities);
+  console.log('🎯 recommendedActivities length:', recommendedActivities.length);
+  
+  // 날짜 계산 헬퍼 함수
+  const calculateDaysLeft = (endDate: string | undefined) => {
+    if (!endDate) return null;
+    const days = Math.floor(
+      (new Date(endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    );
+    return Math.max(0, days);
+  };
 
   const handleBookmarkToggle = (activityId: string, isBookmarked: boolean) => {
     bookmarkMutation.mutate({ activityId, isBookmarked });
@@ -132,30 +396,40 @@ export default function RecommendationsPage() {
     return '#6B6D70';
   };
 
+  const handleSimulationComplete = (result: any) => {
+    setSimulationResult(result);
+    setShowSimulation(false);
+    setShowResult(true);
+  };
+
+  const handleResultClose = () => {
+    setShowResult(false);
+    
+    // 직무 시뮬레이션 결과를 기반으로 필터 설정
+    if (simulationResult) {
+      const jobToFieldMap: { [key: string]: string } = {
+        MKT: '마케팅',
+        PM: '기획',
+        DATA: 'IT',
+        DEV: 'IT',
+        DESIGN: '디자인',
+        PEOPLE: '경영'
+      };
+      
+      const mappedField = jobToFieldMap[simulationResult.topJob] || 'all';
+      setSelectedField(mappedField);
+      setSortBy('match_score');
+      
+      toast.success('맞춤 활동을 확인해보세요! 🎉');
+      queryClient.invalidateQueries({ queryKey: ['recommendations'] });
+    }
+  };
+
   const formatPrizeMoney = (amount?: number) => {
     if (!amount) return null;
     if (amount >= 100000000) return `${(amount / 100000000).toFixed(0)}억원`;
     if (amount >= 10000) return `${(amount / 10000).toFixed(0)}만원`;
     return `${amount.toLocaleString()}원`;
-  };
-
-  const handleCareerBotComplete = (selectedTrack: string, selectedField: string, activityType: string) => {
-    // 선택된 직무와 활동 유형으로 필터 설정
-    if (activityType !== 'all') {
-      setSelectedCategory(activityType);
-    }
-    setSelectedField(selectedField);
-    setSortBy('recommended');
-    
-    // 사용자 프로필 저장 (TODO: API 연동)
-    localStorage.setItem('userCareerTrack', selectedTrack);
-    localStorage.setItem('userCareerField', selectedField);
-    
-    toast.success('진로 추천이 완료되었습니다! 맞춤 활동을 확인해보세요 🎉');
-    setShowCareerBot(false);
-    
-    // 필터 적용 후 데이터 새로고침
-    queryClient.invalidateQueries({ queryKey: ['recommendations'] });
   };
 
   return (
@@ -172,27 +446,21 @@ export default function RecommendationsPage() {
         </div>
 
         {/* AI 추천 배너 */}
-        <div className="card mb-6 bg-gradient-to-r from-[#DDF3EB] to-[#E8F1FF]">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-[#25A778] rounded-xl flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-[#1B1C1E] mb-1">
-                AI가 분석한 맞춤 추천
-              </h3>
-              <p className="text-sm text-[#6B6D70]">
-                당신의 회고 데이터와 관심사를 기반으로 <strong>{activities.length}개</strong>의 활동을 추천합니다
-              </p>
-            </div>
-            <button
-              onClick={() => setShowCareerBot(true)}
-              className="btn-primary whitespace-nowrap"
-            >
-              <Sparkles className="w-4 h-4" />
-              경험 추천받기
-            </button>
+        <div className="bg-white border border-[#EAEBEC] rounded-xl p-6 mb-6 flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-[#1B1C1E] mb-1">
+              총 {recommendedActivities.length}개의 활동
+            </h3>
+            <p className="text-sm text-[#6B6D70]">
+              데이터베이스 기반 실시간 추천
+            </p>
           </div>
+          <button
+            onClick={() => setShowSimulation(true)}
+            className="px-6 py-3 bg-[#25A778] text-white font-semibold rounded-lg hover:bg-[#1F8860] transition-colors"
+          >
+            AI 맞춤 추천받기
+          </button>
         </div>
 
         {/* 필터 영역 */}
@@ -211,25 +479,27 @@ export default function RecommendationsPage() {
             </div>
           </div>
 
-          {/* 카테고리 */}
-          <div className="mb-4">
-            <label className="text-sm font-medium text-[#1B1C1E] mb-2 block">
-              활동 유형
-            </label>
-            <div className="flex gap-2 flex-wrap">
-              {categories.map((cat) => (
-                <button
-                  key={cat.value}
-                  onClick={() => setSelectedCategory(cat.value)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    selectedCategory === cat.value
-                      ? 'bg-[#25A778] text-white shadow-md'
-                      : 'bg-white text-[#6B6D70] hover:bg-[#F1F2F3] border border-[#EAEBEC]'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
+          {/* 카테고리 탭 */}
+          <div className="mb-6">
+            <div className="border-b border-[#EAEBEC]">
+              <div className="flex gap-0 overflow-x-auto">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.value}
+                    onClick={() => setSelectedCategory(cat.value)}
+                    className={`px-6 py-3 font-medium whitespace-nowrap transition-all relative ${
+                      selectedCategory === cat.value
+                        ? 'text-[#25A778] font-bold'
+                        : 'text-[#6B6D70] hover:text-[#1B1C1E]'
+                    }`}
+                  >
+                    {cat.label}
+                    {selectedCategory === cat.value && (
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#25A778]"></div>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -245,13 +515,9 @@ export default function RecommendationsPage() {
                   onClick={() => setSelectedField(field.value)}
                   className={`px-4 py-2 rounded-lg font-medium transition-all ${
                     selectedField === field.value
-                      ? 'shadow-md'
-                      : 'bg-white border border-[#EAEBEC] hover:bg-[#F1F2F3]'
+                      ? 'bg-[#25A778] text-white'
+                      : 'bg-white border border-[#EAEBEC] text-[#6B6D70] hover:bg-[#F1F2F3]'
                   }`}
-                  style={{
-                    backgroundColor: selectedField === field.value ? field.color : undefined,
-                    color: selectedField === field.value ? 'white' : '#6B6D70',
-                  }}
                 >
                   {field.label}
                 </button>
@@ -262,32 +528,50 @@ export default function RecommendationsPage() {
           {/* 정렬 */}
           <div>
             <label className="text-sm font-medium text-[#1B1C1E] mb-2 block">
-              정렬 기준
+              정렬
             </label>
             <div className="flex gap-2">
-              {sortOptions.map((option) => {
-                const Icon = option.Icon;
-                return (
-                  <button
-                    key={option.value}
-                    onClick={() => setSortBy(option.value)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                      sortBy === option.value
-                        ? 'bg-[#418CC3] text-white shadow-md'
-                        : 'bg-white text-[#6B6D70] hover:bg-[#F1F2F3] border border-[#EAEBEC]'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {option.label}
-                  </button>
-                );
-              })}
+              {sortOptions.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setSortBy(option.value)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    sortBy === option.value
+                      ? 'bg-[#1B1C1E] text-white'
+                      : 'bg-white text-[#6B6D70] hover:bg-[#F1F2F3] border border-[#EAEBEC]'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
+        {/* 에러 표시 */}
+        {error && (
+          <div className="card bg-red-50 border-2 border-red-200 text-center py-8">
+            <div className="text-red-500 text-4xl mb-3">⚠️</div>
+            <h3 className="text-lg font-semibold text-red-700 mb-2">
+              데이터를 불러오는데 실패했습니다
+            </h3>
+            <p className="text-red-600 text-sm mb-4">
+              {(error as Error).message}
+            </p>
+            <p className="text-red-500 text-xs mb-4">
+              백엔드 서버(http://localhost:8000)가 실행 중인지 확인하세요.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="btn-primary"
+            >
+              다시 시도
+            </button>
+          </div>
+        )}
+
         {/* 로딩 */}
-        {isLoading && (
+        {isLoading && !error && (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#25A778]"></div>
             <p className="mt-4 text-[#6B6D70]">활동을 불러오는 중...</p>
@@ -295,19 +579,22 @@ export default function RecommendationsPage() {
         )}
 
         {/* 활동 그리드 */}
-        {!isLoading && activities.length > 0 && (
+        {!isLoading && recommendedActivities.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activities.map((activity) => (
+            {recommendedActivities.map((rec) => {
+              const activity = rec.activity;
+              const daysLeft = calculateDaysLeft(activity.end_date);
+              return (
               <div
                 key={activity.id}
                 className="card hover:shadow-lg transition-all cursor-pointer group relative"
               >
                 {/* 매칭 점수 배지 */}
-                {activity.match_score > 0.7 && (
+                {rec.match_score > 0.7 && (
                   <div className="absolute top-4 right-4 z-10">
                     <div className="px-3 py-1 bg-[#25A778] text-white rounded-full text-xs font-bold flex items-center gap-1">
                       <Target className="w-3 h-3" />
-                      {Math.round(activity.match_score * 100)}% 매칭
+                      {Math.round(rec.match_score * 100)}% 매칭
                     </div>
                   </div>
                 )}
@@ -331,18 +618,18 @@ export default function RecommendationsPage() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <span className="px-2 py-1 bg-[#DDF3EB] text-[#186D50] rounded-md text-xs font-bold">
-                      {activity.type}
+                      {activity.category}
                     </span>
-                    {activity.days_left <= 7 && (
+                    {daysLeft !== null && daysLeft <= 7 && (
                       <span
                         className="px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1"
                         style={{
-                          backgroundColor: `${getDaysLeftColor(activity.days_left)}20`,
-                          color: getDaysLeftColor(activity.days_left),
+                          backgroundColor: `${getDaysLeftColor(daysLeft)}20`,
+                          color: getDaysLeftColor(daysLeft),
                         }}
                       >
                         <Clock className="w-3 h-3" />
-                        D-{activity.days_left}
+                        D-{daysLeft}
                       </span>
                     )}
                   </div>
@@ -379,72 +666,61 @@ export default function RecommendationsPage() {
 
                 {/* 분야 태그 */}
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {activity.fields.slice(0, 3).map((field, idx) => {
-                    const fieldColor = fields.find((f) => f.value === field)?.color || '#6B6D70';
-                    return (
-                      <span
-                        key={idx}
-                        className="px-2 py-1 rounded-md text-xs font-medium"
-                        style={{
-                          backgroundColor: `${fieldColor}20`,
-                          color: fieldColor,
-                        }}
-                      >
-                        {field}
-                      </span>
-                    );
-                  })}
+                  {activity.target_jobs.slice(0, 3).map((job, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2 py-1 rounded-md text-xs font-medium bg-[#E8F1FF] text-[#418CC3]"
+                    >
+                      {job}
+                    </span>
+                  ))}
+                  {activity.tags.slice(0, 2).map((tag, idx) => (
+                    <span
+                      key={`tag-${idx}`}
+                      className="px-2 py-1 rounded-md text-xs font-medium bg-[#F8F9FA] text-[#6B6D70]"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
                 </div>
 
                 {/* 하단 정보 */}
                 <div className="pt-4 border-t border-[#EAEBEC] flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm text-[#6B6D70]">
                     <Calendar className="w-4 h-4" />
-                    ~{new Date(activity.application_end_date).toLocaleDateString('ko-KR', {
-                      month: 'short',
-                      day: 'numeric',
-                    })}
+                    {activity.end_date ? (
+                      <>~{new Date(activity.end_date).toLocaleDateString('ko-KR', {
+                        month: 'short',
+                        day: 'numeric',
+                      })}</>
+                    ) : '상시 모집'}
                   </div>
-                  {activity.prize_money && (
-                    <div className="flex items-center gap-1 text-sm font-bold text-[#25A778]">
-                      <Award className="w-4 h-4" />
-                      {formatPrizeMoney(activity.prize_money)}
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2 text-sm text-[#6B6D70]">
+                    <Users className="w-4 h-4" />
+                    {activity.view_count || 0}
+                  </div>
                 </div>
 
-                {/* 매칭 이유 (호버 시 표시) */}
-                {activity.match_score > 0 && (
+                {/* 매칭 이유 */}
+                {rec.match_reasons && rec.match_reasons.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-[#EAEBEC]">
                     <div className="text-xs font-medium text-[#6B6D70] mb-2">
                       추천 이유
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      {activity.match_reasons.major_match && (
-                        <div className="flex items-center gap-1 text-xs px-2 py-1 bg-[#E8F1FF] text-[#418CC3] rounded-md">
+                      {rec.match_reasons.slice(0, 3).map((reason, idx) => (
+                        <div key={idx} className="flex items-center gap-1 text-xs px-2 py-1 bg-[#DDF3EB] text-[#186D50] rounded-md">
                           <CheckCircle className="w-3 h-3" />
-                          학과 매칭
+                          {reason}
                         </div>
-                      )}
-                      {activity.match_reasons.keyword_match && (
-                        <div className="flex items-center gap-1 text-xs px-2 py-1 bg-[#DDF3EB] text-[#186D50] rounded-md">
-                          <CheckCircle className="w-3 h-3" />
-                          키워드 일치
-                        </div>
-                      )}
-                      {activity.match_reasons.interest_match && (
-                        <div className="flex items-center gap-1 text-xs px-2 py-1 bg-[#F0E8FF] text-[#9C6BB3] rounded-md">
-                          <CheckCircle className="w-3 h-3" />
-                          관심사 부합
-                        </div>
-                      )}
+                      ))}
                     </div>
                   </div>
                 )}
 
                 {/* 외부 링크 버튼 */}
                 <a
-                  href={activity.url}
+                  href={activity.url || '#'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-4 btn-primary w-full flex items-center justify-center gap-2"
@@ -454,35 +730,43 @@ export default function RecommendationsPage() {
                   <ExternalLink className="w-4 h-4" />
                 </a>
               </div>
-            ))}
+            );
+            })}
           </div>
         )}
 
         {/* 빈 상태 */}
-        {!isLoading && activities.length === 0 && (
+        {!isLoading && !error && recommendedActivities.length === 0 && (
           <div className="card text-center py-12">
             <Award className="w-16 h-16 text-[#CACBCC] mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-[#1B1C1E] mb-2">
               추천 활동이 없습니다
             </h3>
             <p className="text-[#6B6D70] mb-4">
-              필터를 변경하거나 관심사를 설정해보세요
+              필터를 변경하거나 백엔드에 활동 데이터를 추가해보세요
             </p>
-            <button
-              onClick={() => router.push('/dashboard/settings')}
-              className="btn-primary"
-            >
-              관심사 설정하기
-            </button>
+            <div className="text-xs text-[#9AA1AC] mt-2">
+              <p>현재 필터: 카테고리={selectedCategory}, 분야={selectedField}, 정렬={sortBy}</p>
+              <p className="mt-1">API 응답 데이터: {JSON.stringify(activitiesData)}</p>
+            </div>
           </div>
         )}
       </div>
 
       {/* 진로봇 모달 */}
-      {showCareerBot && (
-        <CareerBot
-          onClose={() => setShowCareerBot(false)}
-          onComplete={handleCareerBotComplete}
+      {showSimulation && (
+        <JobSimulation
+          onClose={() => setShowSimulation(false)}
+          onComplete={handleSimulationComplete}
+        />
+      )}
+
+      {showResult && simulationResult && (
+        <JobResult
+          topJob={simulationResult.topJob}
+          topJobName={simulationResult.topJobName}
+          scores={simulationResult.scores}
+          onClose={handleResultClose}
         />
       )}
     </div>

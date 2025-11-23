@@ -1,13 +1,13 @@
 import axios from 'axios'
 
-// Axios 인스턴스 생성 (통합 버전)
+// Axios 인스턴스 생성 (백엔드 API 명세서 기준)
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || '/api',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true,
+  withCredentials: false, // CORS 정책에 따라 false로 변경
 })
 
 // 요청 인터셉터 - 인증 헤더 자동 추가
@@ -49,16 +49,21 @@ api.interceptors.response.use(
         const refreshToken = localStorage.getItem('refresh_token')
         if (refreshToken) {
           const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh`,
+            'http://localhost:8000/auth/refresh',
             { refreshToken },
-            { withCredentials: true }
+            { 
+              headers: { 'Content-Type': 'application/json' },
+              withCredentials: false 
+            }
           )
 
-          const { accessToken } = response.data.data
-          localStorage.setItem('access_token', accessToken)
+          if (response.data.success && response.data.data) {
+            const { accessToken } = response.data.data
+            localStorage.setItem('access_token', accessToken)
 
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`
-          return api(originalRequest)
+            originalRequest.headers.Authorization = `Bearer ${accessToken}`
+            return api(originalRequest)
+          }
         }
       } catch (refreshError) {
         // Refresh 실패 시 로그아웃

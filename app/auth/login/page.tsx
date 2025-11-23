@@ -32,6 +32,9 @@ export default function LoginPage() {
         password: formData.password,
       })
       
+      console.log('로그인 응답:', response)
+      
+      // 백엔드 API 명세서에 따른 응답 처리
       if (response.success && response.data) {
         // 토큰 저장
         localStorage.setItem('access_token', response.data.accessToken)
@@ -44,10 +47,39 @@ export default function LoginPage() {
         setTimeout(() => {
           router.push('/dashboard')
         }, 500)
+      } else if (response.error) {
+        // 에러 코드에 따른 처리
+        const errorCode = response.error.code
+        const errorMessage = response.error.message
+        
+        if (errorCode === 'INVALID_CREDENTIALS') {
+          toast.error('이메일 또는 비밀번호가 잘못되었습니다')
+        } else if (errorCode === 'USER_NOT_FOUND') {
+          toast.error('등록되지 않은 사용자입니다')
+        } else {
+          toast.error(errorMessage || '로그인에 실패했습니다')
+        }
       }
     } catch (error: any) {
       console.error('로그인 실패:', error)
-      toast.error(error.response?.data?.message || '로그인에 실패했습니다')
+      
+      // 네트워크 에러 또는 서버 에러
+      if (error.response?.data?.error) {
+        const errorCode = error.response.data.error.code
+        const errorMessage = error.response.data.error.message
+        
+        if (errorCode === 'INVALID_CREDENTIALS') {
+          toast.error('이메일 또는 비밀번호가 잘못되었습니다')
+        } else if (errorCode === 'USER_NOT_FOUND') {
+          toast.error('등록되지 않은 사용자입니다')
+        } else {
+          toast.error(errorMessage || '로그인에 실패했습니다')
+        }
+      } else if (error.message === 'Network Error') {
+        toast.error('서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.')
+      } else {
+        toast.error('로그인에 실패했습니다')
+      }
     } finally {
       setIsLoading(false)
     }
