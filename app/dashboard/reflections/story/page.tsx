@@ -141,7 +141,7 @@ export default function StoryViewPage() {
                 <div className="text-2xl flex-shrink-0">{pattern.icon}</div>
                 <div>
                   <div className="font-medium text-[#1B1C1E]">{pattern.count}회는</div>
-                  <div className="text-sm text-[#6B6D70]">"{pattern.label}"과 관련</div>
+                  <div className="text-sm text-[#6B6D70]">&ldquo;{pattern.label}&rdquo;과 관련</div>
                 </div>
               </div>
             )) || <p className="text-[#6B6D70]">아직 패턴을 찾기에 데이터가 부족해요</p>}
@@ -167,7 +167,7 @@ export default function StoryViewPage() {
                 <div className="text-2xl flex-shrink-0">{pattern.icon}</div>
                 <div>
                   <div className="font-medium text-[#1B1C1E]">{pattern.count}회는</div>
-                  <div className="text-sm text-[#6B6D70]">"{pattern.label}"과 연결</div>
+                  <div className="text-sm text-[#6B6D70]">&ldquo;{pattern.label}&rdquo;과 연결</div>
                 </div>
               </div>
             )) || <p className="text-[#6B6D70]">아직 패턴을 찾기에 데이터가 부족해요</p>}

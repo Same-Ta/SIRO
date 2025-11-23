@@ -56,6 +56,35 @@ export default function DashboardLayout({
 
         {/* Main Menu */}
         <nav className="flex-1 px-4 space-y-1">
+          {/* 직무 선택 카테고리 */}
+          <Link
+            href="/dashboard/career"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-[8px] transition-all ${
+              pathname === '/dashboard/career'
+                ? 'bg-[#25A778] text-white font-bold'
+                : 'text-white/70 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <TrendingUp className="w-4 h-4" />
+            <span className="text-sm">직무 선택</span>
+          </Link>
+          
+          {/* 스펙체크 카테고리 */}
+          <Link
+            href="/dashboard/spec-check"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-[8px] transition-all ${
+              pathname?.startsWith('/dashboard/spec-check')
+                ? 'bg-[#25A778] text-white font-bold'
+                : 'text-white/70 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Sparkles className="w-4 h-4" />
+            <span className="text-sm">스펙체크</span>
+          </Link>
+          
+          {/* 구분선 */}
+          <div className="h-px bg-white/10 my-3"></div>
+          
           <Link
             href="/dashboard"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-[8px] transition-all ${
@@ -92,24 +121,13 @@ export default function DashboardLayout({
           <Link
             href="/dashboard/reflections"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-[8px] transition-all ${
-              pathname === '/dashboard/reflections'
+              pathname?.startsWith('/dashboard/reflections')
                 ? 'bg-[#25A778] text-white font-bold'
                 : 'text-white/70 hover:text-white hover:bg-white/5'
             }`}
           >
             <BookOpen className="w-4 h-4" />
-            <span className="text-sm">나의 회고</span>
-          </Link>
-          <Link
-            href="/dashboard/reflections/templates"
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-[8px] transition-all ${
-              pathname === '/dashboard/reflections/templates'
-                ? 'bg-[#25A778] text-white font-bold'
-                : 'text-white/70 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            <span className="text-sm">템플릿</span>
+            <span className="text-sm">경험정리</span>
           </Link>
           <Link
             href="/dashboard/reflections/analysis"

@@ -1,0 +1,197 @@
+{
+  "spec_check_id": "data_spec_v1",
+  "job_category": "data",
+  "title": "데이터 분석 직무 스펙체크",
+  "description": "데이터 분석 직군 내 세부 직무(비즈니스 분석, 데이터 엔지니어링, 데이터 사이언스, BI 등)를 판별하는 설문입니다.",
+  "estimated_time": "3-5분",
+  "response_type": "likert_5",
+  "subtypes": [
+    {
+      "id": "business_analyst",
+      "name": "비즈니스 분석가(BA)",
+      "name_en": "Business Analyst",
+      "description": "비즈니스 데이터 분석과 인사이트 도출"
+    },
+    {
+      "id": "data_engineer",
+      "name": "데이터 엔지니어",
+      "name_en": "Data Engineer",
+      "description": "데이터 파이프라인과 인프라 구축"
+    },
+    {
+      "id": "data_scientist",
+      "name": "데이터 사이언티스트",
+      "name_en": "Data Scientist",
+      "description": "머신러닝과 예측 모델링"
+    },
+    {
+      "id": "bi_analyst",
+      "name": "BI 분석가",
+      "name_en": "BI Analyst",
+      "description": "대시보드 구축과 시각화"
+    },
+    {
+      "id": "product_analyst",
+      "name": "프로덕트 분석가",
+      "name_en": "Product Analyst",
+      "description": "제품 지표 분석과 실험 설계"
+    }
+  ],
+  "questions": [
+    {
+      "id": "d1",
+      "text": "SQL을 사용해 데이터를 추출하고 가공해본 경험이 많다.",
+      "weights": {
+        "business_analyst": 2,
+        "data_engineer": 2,
+        "bi_analyst": 2
+      }
+    },
+    {
+      "id": "d2",
+      "text": "Python이나 R을 사용해 데이터 분석을 해본 경험이 있다.",
+      "weights": {
+        "data_scientist": 3,
+        "business_analyst": 1
+      }
+    },
+    {
+      "id": "d3",
+      "text": "대시보드(Tableau, Power BI 등)를 만들어본 경험이 있다.",
+      "weights": {
+        "bi_analyst": 3,
+        "business_analyst": 1
+      }
+    },
+    {
+      "id": "d4",
+      "text": "A/B 테스트를 설계하고 통계적으로 분석해본 경험이 있다.",
+      "weights": {
+        "product_analyst": 3,
+        "data_scientist": 1
+      }
+    },
+    {
+      "id": "d5",
+      "text": "데이터 파이프라인을 구축하거나 ETL 작업을 해본 경험이 있다.",
+      "weights": {
+        "data_engineer": 3
+      }
+    },
+    {
+      "id": "d6",
+      "text": "머신러닝 모델을 학습시키고 배포해본 경험이 있다.",
+      "weights": {
+        "data_scientist": 3
+      }
+    },
+    {
+      "id": "d7",
+      "text": "비즈니스 문제를 데이터 분석 문제로 정의하고 해결한 경험이 있다.",
+      "weights": {
+        "business_analyst": 3,
+        "product_analyst": 1
+      }
+    },
+    {
+      "id": "d8",
+      "text": "제품 지표(MAU, DAU, 리텐션 등)를 추적하고 분석해본 경험이 있다.",
+      "weights": {
+        "product_analyst": 3
+      }
+    },
+    {
+      "id": "d9",
+      "text": "데이터베이스 설계나 스키마 최적화를 해본 경험이 있다.",
+      "weights": {
+        "data_engineer": 2,
+        "bi_analyst": 1
+      }
+    },
+    {
+      "id": "d10",
+      "text": "통계학(회귀분석, 가설검정 등)에 대한 이해가 있다.",
+      "weights": {
+        "data_scientist": 2,
+        "product_analyst": 2
+      }
+    },
+    {
+      "id": "d11",
+      "text": "데이터 시각화로 인사이트를 전달하는 것을 잘한다.",
+      "weights": {
+        "bi_analyst": 2,
+        "business_analyst": 2
+      }
+    },
+    {
+      "id": "d12",
+      "text": "클라우드 플랫폼(AWS, GCP, Azure 등)을 사용해본 경험이 있다.",
+      "weights": {
+        "data_engineer": 2,
+        "data_scientist": 1
+      }
+    },
+    {
+      "id": "d13",
+      "text": "고객 세그멘테이션이나 코호트 분석을 해본 경험이 있다.",
+      "weights": {
+        "business_analyst": 2,
+        "product_analyst": 2
+      }
+    },
+    {
+      "id": "d14",
+      "text": "실시간 데이터 처리(스트리밍)에 관심이 많다.",
+      "weights": {
+        "data_engineer": 3
+      }
+    },
+    {
+      "id": "d15",
+      "text": "예측 모델링(매출 예측, 이탈 예측 등)을 해본 경험이 있다.",
+      "weights": {
+        "data_scientist": 3
+      }
+    },
+    {
+      "id": "d16",
+      "text": "경영진이나 비즈니스 팀에게 데이터 분석 결과를 보고한 경험이 있다.",
+      "weights": {
+        "business_analyst": 2,
+        "bi_analyst": 2
+      }
+    },
+    {
+      "id": "d17",
+      "text": "제품 개선을 위한 데이터 기반 제안을 해본 경험이 있다.",
+      "weights": {
+        "product_analyst": 3
+      }
+    },
+    {
+      "id": "d18",
+      "text": "데이터 품질 관리나 데이터 거버넌스에 관심이 있다.",
+      "weights": {
+        "data_engineer": 2,
+        "bi_analyst": 1
+      }
+    },
+    {
+      "id": "d19",
+      "text": "Git, Docker 등 개발 도구를 사용할 수 있다.",
+      "weights": {
+        "data_engineer": 2,
+        "data_scientist": 2
+      }
+    },
+    {
+      "id": "d20",
+      "text": "퍼널 분석이나 전환율 최적화를 해본 경험이 있다.",
+      "weights": {
+        "product_analyst": 2,
+        "business_analyst": 1
+      }
+    }
+  ]
+}

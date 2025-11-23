@@ -1,0 +1,195 @@
+{
+  "spec_check_id": "operations_spec_v1",
+  "job_category": "operations",
+  "title": "운영/SCM 직무 스펙체크",
+  "description": "운영·SCM 직군 내 세부 직무(생산관리, 물류/SCM, 품질관리, 프로세스 개선 등)를 판별하는 설문입니다.",
+  "estimated_time": "3-5분",
+  "response_type": "likert_5",
+  "subtypes": [
+    {
+      "id": "production",
+      "name": "생산/제조관리",
+      "name_en": "Production Management",
+      "description": "생산 계획과 제조 프로세스 관리"
+    },
+    {
+      "id": "scm_logistics",
+      "name": "물류/SCM",
+      "name_en": "Logistics/SCM",
+      "description": "공급망 관리와 물류 최적화"
+    },
+    {
+      "id": "quality",
+      "name": "품질관리(QA/QC)",
+      "name_en": "Quality Assurance",
+      "description": "품질 기준 수립과 검증"
+    },
+    {
+      "id": "process_improvement",
+      "name": "프로세스 개선",
+      "name_en": "Process Improvement",
+      "description": "업무 효율화와 프로세스 혁신"
+    },
+    {
+      "id": "operations_support",
+      "name": "운영지원",
+      "name_en": "Operations Support",
+      "description": "현장 운영과 지원 업무"
+    }
+  ],
+  "questions": [
+    {
+      "id": "o1",
+      "text": "생산 계획이나 일정 관리를 해본 경험이 있다.",
+      "weights": {
+        "production": 3
+      }
+    },
+    {
+      "id": "o2",
+      "text": "재고 관리나 발주 업무를 해본 경험이 있다.",
+      "weights": {
+        "scm_logistics": 3
+      }
+    },
+    {
+      "id": "o3",
+      "text": "품질 검사나 불량률 관리를 해본 경험이 있다.",
+      "weights": {
+        "quality": 3
+      }
+    },
+    {
+      "id": "o4",
+      "text": "업무 프로세스를 분석하고 개선 방안을 제안한 경험이 있다.",
+      "weights": {
+        "process_improvement": 3
+      }
+    },
+    {
+      "id": "o5",
+      "text": "매장이나 현장 운영 업무를 해본 경험이 있다.",
+      "weights": {
+        "operations_support": 3
+      }
+    },
+    {
+      "id": "o6",
+      "text": "공급업체(Vendor)와 협상하거나 관리해본 경험이 있다.",
+      "weights": {
+        "scm_logistics": 2,
+        "production": 1
+      }
+    },
+    {
+      "id": "o7",
+      "text": "생산 효율이나 가동률을 분석해본 경험이 있다.",
+      "weights": {
+        "production": 2,
+        "process_improvement": 1
+      }
+    },
+    {
+      "id": "o8",
+      "text": "물류 비용을 절감하거나 배송 프로세스를 개선한 경험이 있다.",
+      "weights": {
+        "scm_logistics": 2,
+        "process_improvement": 1
+      }
+    },
+    {
+      "id": "o9",
+      "text": "품질 기준(SOP)을 작성하거나 표준화를 진행한 경험이 있다.",
+      "weights": {
+        "quality": 2,
+        "process_improvement": 1
+      }
+    },
+    {
+      "id": "o10",
+      "text": "ERP 시스템(SAP, Oracle 등)을 사용해본 경험이 있다.",
+      "weights": {
+        "production": 1,
+        "scm_logistics": 2,
+        "operations_support": 1
+      }
+    },
+    {
+      "id": "o11",
+      "text": "린(Lean)이나 Six Sigma 같은 개선 방법론에 관심이 있다.",
+      "weights": {
+        "process_improvement": 3
+      }
+    },
+    {
+      "id": "o12",
+      "text": "수요 예측이나 공급 계획을 수립해본 경험이 있다.",
+      "weights": {
+        "scm_logistics": 2,
+        "production": 1
+      }
+    },
+    {
+      "id": "o13",
+      "text": "품질 인증(ISO 등)이나 감사 업무에 참여한 경험이 있다.",
+      "weights": {
+        "quality": 3
+      }
+    },
+    {
+      "id": "o14",
+      "text": "현장 직원들과 협업하거나 교육한 경험이 많다.",
+      "weights": {
+        "operations_support": 2,
+        "quality": 1
+      }
+    },
+    {
+      "id": "o15",
+      "text": "작업 매뉴얼이나 운영 가이드를 작성해본 경험이 있다.",
+      "weights": {
+        "operations_support": 2,
+        "process_improvement": 1
+      }
+    },
+    {
+      "id": "o16",
+      "text": "물류 시스템(WMS, TMS 등)을 다뤄본 경험이 있다.",
+      "weights": {
+        "scm_logistics": 3
+      }
+    },
+    {
+      "id": "o17",
+      "text": "생산 라인 설계나 레이아웃 최적화에 관심이 있다.",
+      "weights": {
+        "production": 2,
+        "process_improvement": 1
+      }
+    },
+    {
+      "id": "o18",
+      "text": "안전 관리나 환경 규제 준수 업무에 관심이 있다.",
+      "weights": {
+        "quality": 2,
+        "operations_support": 1
+      }
+    },
+    {
+      "id": "o19",
+      "text": "데이터를 기반으로 운영 효율을 분석하고 개선한 경험이 있다.",
+      "weights": {
+        "process_improvement": 2,
+        "scm_logistics": 1
+      }
+    },
+    {
+      "id": "o20",
+      "text": "고객 클레임이나 반품 처리를 관리해본 경험이 있다.",
+      "weights": {
+        "operations_support": 2,
+        "quality": 1
+      }
+    }
+  ]
+}

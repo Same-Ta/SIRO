@@ -1,0 +1,192 @@
+{
+  "spec_check_id": "sales_spec_v1",
+  "job_category": "sales",
+  "title": "영업/영업관리 직무 스펙체크",
+  "description": "영업 직군 내 세부 직무(B2B 영업, B2C 영업, 영업관리, BD, 키 어카운트 등)를 판별하는 설문입니다.",
+  "estimated_time": "3-5분",
+  "response_type": "likert_5",
+  "subtypes": [
+    {
+      "id": "b2b_sales",
+      "name": "B2B 영업",
+      "name_en": "B2B Sales",
+      "description": "기업 고객 대상 영업"
+    },
+    {
+      "id": "b2c_sales",
+      "name": "B2C 영업",
+      "name_en": "B2C Sales",
+      "description": "개인 고객 대상 영업"
+    },
+    {
+      "id": "sales_management",
+      "name": "영업관리",
+      "name_en": "Sales Operations",
+      "description": "영업 프로세스와 성과 관리"
+    },
+    {
+      "id": "bd",
+      "name": "사업개발(BD)",
+      "name_en": "Business Development",
+      "description": "신규 사업 기회와 파트너십 발굴"
+    },
+    {
+      "id": "key_account",
+      "name": "주요 고객 관리(KAM)",
+      "name_en": "Key Account Management",
+      "description": "핵심 고객 관계 관리"
+    }
+  ],
+  "questions": [
+    {
+      "id": "sa1",
+      "text": "기업 고객(B2B)을 대상으로 영업이나 제안을 해본 경험이 있다.",
+      "weights": {
+        "b2b_sales": 3,
+        "bd": 1
+      }
+    },
+    {
+      "id": "sa2",
+      "text": "개인 고객(B2C)을 대상으로 판매나 상담을 해본 경험이 있다.",
+      "weights": {
+        "b2c_sales": 3
+      }
+    },
+    {
+      "id": "sa3",
+      "text": "영업 목표를 설정하고 실적을 관리해본 경험이 있다.",
+      "weights": {
+        "sales_management": 3
+      }
+    },
+    {
+      "id": "sa4",
+      "text": "신규 파트너사나 제휴처를 발굴해본 경험이 있다.",
+      "weights": {
+        "bd": 3
+      }
+    },
+    {
+      "id": "sa5",
+      "text": "주요 고객(VIP, 대형 거래처)과의 관계를 장기적으로 관리해본 경험이 있다.",
+      "weights": {
+        "key_account": 3
+      }
+    },
+    {
+      "id": "sa6",
+      "text": "제안서나 견적서를 작성해본 경험이 많다.",
+      "weights": {
+        "b2b_sales": 2,
+        "bd": 1
+      }
+    },
+    {
+      "id": "sa7",
+      "text": "고객 니즈를 파악하고 맞춤형 솔루션을 제안하는 것을 잘한다.",
+      "weights": {
+        "b2b_sales": 2,
+        "key_account": 2
+      }
+    },
+    {
+      "id": "sa8",
+      "text": "콜드콜이나 아웃바운드 영업을 해본 경험이 있다.",
+      "weights": {
+        "b2c_sales": 2,
+        "b2b_sales": 1
+      }
+    },
+    {
+      "id": "sa9",
+      "text": "CRM 시스템(Salesforce 등)을 사용해본 경험이 있다.",
+      "weights": {
+        "sales_management": 2,
+        "key_account": 1
+      }
+    },
+    {
+      "id": "sa10",
+      "text": "계약 협상이나 가격 조율을 해본 경험이 있다.",
+      "weights": {
+        "b2b_sales": 2,
+        "bd": 2
+      }
+    },
+    {
+      "id": "sa11",
+      "text": "영업 프로세스나 세일즈 퍼널을 설계하고 개선해본 경험이 있다.",
+      "weights": {
+        "sales_management": 3
+      }
+    },
+    {
+      "id": "sa12",
+      "text": "신규 시장이나 산업을 조사하고 진출 전략을 세운 경험이 있다.",
+      "weights": {
+        "bd": 2,
+        "b2b_sales": 1
+      }
+    },
+    {
+      "id": "sa13",
+      "text": "고객 만족도(CS) 관리나 사후 관리(A/S)를 해본 경험이 있다.",
+      "weights": {
+        "key_account": 2,
+        "b2c_sales": 1
+      }
+    },
+    {
+      "id": "sa14",
+      "text": "영업 데이터를 분석하고 리포트를 작성한 경험이 있다.",
+      "weights": {
+        "sales_management": 2
+      }
+    },
+    {
+      "id": "sa15",
+      "text": "파트너십 계약서나 MOU를 작성하고 체결해본 경험이 있다.",
+      "weights": {
+        "bd": 3
+      }
+    },
+    {
+      "id": "sa16",
+      "text": "온라인(이커머스, SNS 등) 채널로 판매해본 경험이 있다.",
+      "weights": {
+        "b2c_sales": 2
+      }
+    },
+    {
+      "id": "sa17",
+      "text": "주요 고객의 비즈니스 목표를 이해하고 장기 전략을 제안한 경험이 있다.",
+      "weights": {
+        "key_account": 3
+      }
+    },
+    {
+      "id": "sa18",
+      "text": "영업팀 교육이나 멘토링을 해본 경험이 있다.",
+      "weights": {
+        "sales_management": 2
+      }
+    },
+    {
+      "id": "sa19",
+      "text": "해외 거래처나 글로벌 파트너와 협업해본 경험이 있다.",
+      "weights": {
+        "bd": 2,
+        "b2b_sales": 1
+      }
+    },
+    {
+      "id": "sa20",
+      "text": "고객 이탈을 방지하고 재계약률을 높이는 전략을 실행해본 경험이 있다.",
+      "weights": {
+        "key_account": 2,
+        "sales_management": 1
+      }
+    }
+  ]
+}

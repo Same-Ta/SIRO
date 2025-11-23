@@ -1,0 +1,216 @@
+{
+  "spec_check_id": "marketing_spec_v1",
+  "job_category": "marketing",
+  "title": "마케팅 직무 스펙체크",
+  "description": "마케팅 직군 내 세부 직무(그로스, 퍼포먼스, 브랜드, 콘텐츠, CRM 등)를 판별하는 설문입니다.",
+  "estimated_time": "3-5분",
+  "response_type": "likert_5",
+  "response_labels": {
+    "1": "전혀 아니다/없다",
+    "2": "아니다/약간 있다",
+    "3": "보통이다",
+    "4": "그렇다/있다",
+    "5": "매우 그렇다/많이 있다"
+  },
+  "subtypes": [
+    {
+      "id": "growth",
+      "name": "그로스 마케터",
+      "name_en": "Growth Marketer",
+      "description": "데이터 기반 실험과 성장 지표 최적화에 집중"
+    },
+    {
+      "id": "performance",
+      "name": "퍼포먼스 마케터",
+      "name_en": "Performance Marketer",
+      "description": "광고 운영과 ROI 최적화 전문"
+    },
+    {
+      "id": "brand",
+      "name": "브랜드 마케터",
+      "name_en": "Brand Marketer",
+      "description": "브랜드 이미지와 메시지 구축"
+    },
+    {
+      "id": "content",
+      "name": "콘텐츠 마케터",
+      "name_en": "Content Marketer",
+      "description": "콘텐츠 제작과 스토리텔링 중심"
+    },
+    {
+      "id": "crm",
+      "name": "CRM/리텐션 마케터",
+      "name_en": "CRM Marketer",
+      "description": "고객 관계 관리와 재방문 유도"
+    },
+    {
+      "id": "digital",
+      "name": "디지털 마케터",
+      "name_en": "Digital Marketer",
+      "description": "온라인 채널 전반 운영"
+    }
+  ],
+  "questions": [
+    {
+      "id": "m1",
+      "text": "데이터 분석 툴(Excel, GA4, Amplitude 등)을 사용해서 고객 행동을 분석해본 경험이 있다.",
+      "weights": {
+        "growth": 3,
+        "performance": 2,
+        "digital": 1
+      }
+    },
+    {
+      "id": "m2",
+      "text": "A/B 테스트를 직접 설계하거나 실험을 진행해본 경험이 있다.",
+      "weights": {
+        "growth": 3,
+        "performance": 1
+      }
+    },
+    {
+      "id": "m3",
+      "text": "광고 캠페인(페이스북, 구글, 인스타 등)을 직접 운영하거나 세팅해본 경험이 있다.",
+      "weights": {
+        "performance": 3,
+        "digital": 2
+      }
+    },
+    {
+      "id": "m4",
+      "text": "CPA, CTR, ROAS 등의 광고 지표를 이해하고 최적화를 시도해본 경험이 있다.",
+      "weights": {
+        "performance": 3,
+        "growth": 1
+      }
+    },
+    {
+      "id": "m5",
+      "text": "블로그 글, 카드뉴스, 영상 등 마케팅 콘텐츠를 직접 제작해본 경험이 있다.",
+      "weights": {
+        "content": 3,
+        "brand": 1
+      }
+    },
+    {
+      "id": "m6",
+      "text": "SNS(인스타그램, 유튜브, 틱톡 등) 계정을 운영하거나 콘텐츠 기획을 해본 경험이 있다.",
+      "weights": {
+        "content": 2,
+        "digital": 2
+      }
+    },
+    {
+      "id": "m7",
+      "text": "브랜드 아이덴티티(로고, 슬로건, 톤앤매너 등)를 기획하거나 가이드를 만들어본 경험이 있다.",
+      "weights": {
+        "brand": 3
+      }
+    },
+    {
+      "id": "m8",
+      "text": "마케팅 캠페인의 브랜드 메시지나 스토리를 설계해본 경험이 있다.",
+      "weights": {
+        "brand": 3,
+        "content": 1
+      }
+    },
+    {
+      "id": "m9",
+      "text": "CRM 툴(이메일, 푸시 알림 등)로 고객 리텐션 캠페인을 기획하거나 운영해본 경험이 있다.",
+      "weights": {
+        "crm": 3,
+        "growth": 1
+      }
+    },
+    {
+      "id": "m10",
+      "text": "고객 세그먼트를 나누고 타겟별 맞춤 메시지를 전달해본 경험이 있다.",
+      "weights": {
+        "crm": 2,
+        "growth": 2
+      }
+    },
+    {
+      "id": "m11",
+      "text": "랜딩페이지나 광고 소재의 카피를 작성하거나 개선해본 경험이 있다.",
+      "weights": {
+        "growth": 2,
+        "performance": 2,
+        "content": 1
+      }
+    },
+    {
+      "id": "m12",
+      "text": "전환율(CVR)을 높이기 위해 UX/UI를 개선하거나 제안해본 경험이 있다.",
+      "weights": {
+        "growth": 3,
+        "performance": 1
+      }
+    },
+    {
+      "id": "m13",
+      "text": "KPI(성장 지표)를 직접 설정하고 주기적으로 모니터링해본 경험이 있다.",
+      "weights": {
+        "growth": 3,
+        "performance": 2
+      }
+    },
+    {
+      "id": "m14",
+      "text": "광고 캠페인의 예산을 배분하고 ROI를 추적해본 경험이 있다.",
+      "weights": {
+        "performance": 3,
+        "digital": 1
+      }
+    },
+    {
+      "id": "m15",
+      "text": "시장 조사나 경쟁사 분석을 바탕으로 전략을 수립해본 경험이 있다.",
+      "weights": {
+        "brand": 2,
+        "digital": 2
+      }
+    },
+    {
+      "id": "m16",
+      "text": "SEO(검색엔진 최적화)나 키워드 분석을 활용해본 경험이 있다.",
+      "weights": {
+        "digital": 3,
+        "content": 1
+      }
+    },
+    {
+      "id": "m17",
+      "text": "인플루언서나 파트너와의 협업 캠페인을 기획하거나 운영해본 경험이 있다.",
+      "weights": {
+        "brand": 2,
+        "content": 2
+      }
+    },
+    {
+      "id": "m18",
+      "text": "고객 피드백이나 리뷰를 분석해서 마케팅에 반영해본 경험이 있다.",
+      "weights": {
+        "crm": 2,
+        "growth": 2
+      }
+    },
+    {
+      "id": "m19",
+      "text": "디자인 툴(Figma, Canva, Photoshop 등)을 사용해서 마케팅 소재를 직접 만들어본 경험이 있다.",
+      "weights": {
+        "content": 3,
+        "brand": 1
+      }
+    },
+    {
+      "id": "m20",
+      "text": "고객 생애 가치(LTV)나 재구매율을 높이기 위한 전략을 세워본 경험이 있다.",
+      "weights": {
+        "crm": 3,
+        "growth": 2
+      }
+    }
+  ]
+}

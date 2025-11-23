@@ -1,0 +1,192 @@
+{
+  "spec_check_id": "strategy_spec_v1",
+  "job_category": "strategy",
+  "title": "전략/기획 직무 스펙체크",
+  "description": "전략·기획 직군 내 세부 직무(경영전략, 사업기획, 경영지원, 컨설팅 등)를 판별하는 설문입니다.",
+  "estimated_time": "3-5분",
+  "response_type": "likert_5",
+  "subtypes": [
+    {
+      "id": "corporate_strategy",
+      "name": "경영전략",
+      "name_en": "Corporate Strategy",
+      "description": "전사 전략과 중장기 계획 수립"
+    },
+    {
+      "id": "business_planning",
+      "name": "사업기획",
+      "name_en": "Business Planning",
+      "description": "신규 사업과 프로젝트 기획"
+    },
+    {
+      "id": "management_support",
+      "name": "경영지원/기획관리",
+      "name_en": "Management Support",
+      "description": "예산, 성과 관리 및 경영 지원"
+    },
+    {
+      "id": "consulting",
+      "name": "전략 컨설팅",
+      "name_en": "Strategy Consulting",
+      "description": "문제 해결과 전략 자문"
+    }
+  ],
+  "questions": [
+    {
+      "id": "s1",
+      "text": "사업 계획서나 제안서를 작성해본 경험이 많다.",
+      "weights": {
+        "business_planning": 3,
+        "consulting": 1
+      }
+    },
+    {
+      "id": "s2",
+      "text": "시장 분석이나 경쟁사 벤치마킹을 진행해본 경험이 있다.",
+      "weights": {
+        "corporate_strategy": 2,
+        "consulting": 2
+      }
+    },
+    {
+      "id": "s3",
+      "text": "파워포인트로 전략 보고서를 만드는 것에 능숙하다.",
+      "weights": {
+        "corporate_strategy": 2,
+        "consulting": 2
+      }
+    },
+    {
+      "id": "s4",
+      "text": "예산 수립이나 실적 관리를 해본 경험이 있다.",
+      "weights": {
+        "management_support": 3
+      }
+    },
+    {
+      "id": "s5",
+      "text": "신규 사업 아이디어를 발굴하고 검증해본 경험이 있다.",
+      "weights": {
+        "business_planning": 3
+      }
+    },
+    {
+      "id": "s6",
+      "text": "케이스 스터디나 문제 해결 프레임워크(MECE 등)에 익숙하다.",
+      "weights": {
+        "consulting": 3
+      }
+    },
+    {
+      "id": "s7",
+      "text": "전사 KPI나 성과 지표를 설정하고 모니터링해본 경험이 있다.",
+      "weights": {
+        "management_support": 2,
+        "corporate_strategy": 1
+      }
+    },
+    {
+      "id": "s8",
+      "text": "M&A, 투자, 파트너십 검토 업무에 관심이 있다.",
+      "weights": {
+        "corporate_strategy": 2,
+        "business_planning": 1
+      }
+    },
+    {
+      "id": "s9",
+      "text": "임원이나 경영진에게 보고하고 설득하는 경험이 있다.",
+      "weights": {
+        "corporate_strategy": 2,
+        "consulting": 1
+      }
+    },
+    {
+      "id": "s10",
+      "text": "데이터 분석을 통해 전략적 인사이트를 도출한 경험이 있다.",
+      "weights": {
+        "corporate_strategy": 2,
+        "consulting": 2
+      }
+    },
+    {
+      "id": "s11",
+      "text": "프로젝트 관리(일정, 리소스, 리스크)를 해본 경험이 있다.",
+      "weights": {
+        "business_planning": 2,
+        "management_support": 1
+      }
+    },
+    {
+      "id": "s12",
+      "text": "사업 타당성 분석이나 재무 모델링을 해본 경험이 있다.",
+      "weights": {
+        "business_planning": 2,
+        "consulting": 2
+      }
+    },
+    {
+      "id": "s13",
+      "text": "조직 구조나 업무 프로세스 개선 프로젝트에 참여한 적이 있다.",
+      "weights": {
+        "management_support": 2,
+        "consulting": 1
+      }
+    },
+    {
+      "id": "s14",
+      "text": "이해관계자(부서 간) 조율과 커뮤니케이션을 잘한다.",
+      "weights": {
+        "management_support": 2,
+        "corporate_strategy": 1
+      }
+    },
+    {
+      "id": "s15",
+      "text": "산업 트렌드나 거시 경제 지표에 관심이 많다.",
+      "weights": {
+        "corporate_strategy": 2,
+        "consulting": 1
+      }
+    },
+    {
+      "id": "s16",
+      "text": "빠르게 문제를 정의하고 가설을 세우는 것을 잘한다.",
+      "weights": {
+        "consulting": 3
+      }
+    },
+    {
+      "id": "s17",
+      "text": "전략 실행 계획(Action Plan)을 구체적으로 작성한 경험이 있다.",
+      "weights": {
+        "corporate_strategy": 2,
+        "business_planning": 1
+      }
+    },
+    {
+      "id": "s18",
+      "text": "사업 포트폴리오 관리나 우선순위 결정 경험이 있다.",
+      "weights": {
+        "corporate_strategy": 2,
+        "management_support": 1
+      }
+    },
+    {
+      "id": "s19",
+      "text": "다양한 산업과 비즈니스 모델을 배우는 것을 즐긴다.",
+      "weights": {
+        "consulting": 2,
+        "business_planning": 1
+      }
+    },
+    {
+      "id": "s20",
+      "text": "회의록이나 리포트를 작성하는 것에 익숙하다.",
+      "weights": {
+        "management_support": 2,
+        "corporate_strategy": 1
+      }
+    }
+  ]
+}

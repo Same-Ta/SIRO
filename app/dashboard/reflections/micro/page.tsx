@@ -126,11 +126,16 @@ export default function MicroLogPage() {
   };
 
   const handleMemoSubmit = () => {
-    // AI 태그 제안 요청
-    getAISuggestionsMutation.mutate({
-      activityType: formData.activityType,
-      memo: formData.memo,
-    });
+    // AI 태그 제안 스킵 (API 없으므로 기본 태그로 설정)
+    const defaultTags = formData.activityType === 'lecture' ? ['학습', '팀워크'] :
+                       formData.activityType === 'club' ? ['협업', '네트워킹'] :
+                       formData.activityType === 'contest' ? ['문제해결', '프로젝트'] :
+                       formData.activityType === 'intern' ? ['실무', '경험'] :
+                       formData.activityType === 'study' ? ['자기계발', '학습'] :
+                       ['기타'];
+    
+    setFormData(prev => ({ ...prev, suggestedTags: defaultTags }));
+    setStep(3);
   };
 
   const handleMoodSelect = (mood: string) => {
@@ -234,11 +239,10 @@ export default function MicroLogPage() {
 
             <div className="flex gap-3">
               <button
-                onClick={() => handleMemoSubmit()}
-                disabled={getAISuggestionsMutation.isPending}
+                onClick={handleMemoSubmit}
                 className="btn-primary flex-1"
               >
-                {getAISuggestionsMutation.isPending ? 'AI 분석 중...' : '다음'}
+                다음
               </button>
             </div>
           </div>

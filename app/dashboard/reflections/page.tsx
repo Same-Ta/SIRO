@@ -1,20 +1,49 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { Plus, Sparkles, TrendingUp, Calendar, BookOpen, Heart, Target } from 'lucide-react';
 
+// 활동 타입별 아이콘 및 라벨 매핑
+const getActivityInfo = (activityType: string) => {
+  const map: Record<string, { icon: string; label: string }> = {
+    contest: { icon: '🏆', label: '공모전' },
+    club: { icon: '👥', label: '동아리' },
+    project: { icon: '💻', label: '프로젝트' },
+    internship: { icon: '💼', label: '인턴' },
+    study: { icon: '📚', label: '스터디' },
+    etc: { icon: '✨', label: '기타' },
+  };
+  return map[activityType] || { icon: '✨', label: '활동' };
+};
+
 export default function ReflectionsPage() {
   const router = useRouter();
+  
 
   // 최근 마이크로 로그
   const { data: recentLogs } = useQuery({
     queryKey: ['micro-logs-recent'],
     queryFn: async () => {
-      const response = await fetch('http://localhost:8000/api/reflections/micro?limit=7', {
+      const response = await fetch('/api/v1/reflections/micro?limit=7', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-          'x-user-id': localStorage.getItem('x-user-id') || '',
+          'x-user-id': localStorage.getItem('x-user-id') || 'dev-user-default',
+        },
+      });
+      return response.json();
+    },
+  });
+
+  // STAR 회고 데이터도 조회
+  const { data: starReflections } = useQuery({
+    queryKey: ['star-reflections-recent'],
+    queryFn: async () => {
+      const response = await fetch('/api/v1/reflections?limit=7', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          'x-user-id': localStorage.getItem('x-user-id') || 'dev-user-default',
         },
       });
       return response.json();
@@ -25,20 +54,51 @@ export default function ReflectionsPage() {
   const { data: weekStats } = useQuery({
     queryKey: ['week-stats'],
     queryFn: async () => {
-      const response = await fetch('http://localhost:8000/api/reflections/stats?period=week', {
+      const response = await fetch('/api/v1/reflections/stats?period=week', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-          'x-user-id': localStorage.getItem('x-user-id') || '',
+          'x-user-id': localStorage.getItem('x-user-id') || 'dev-user-default',
         },
       });
       return response.json();
     },
   });
 
-  // 사용자 baseline 체크
-  const needsBaseline = !localStorage.getItem('baseline_mood');
-  const logs = recentLogs?.data || [];
-  const stats = weekStats?.data;
+  // 사용자 오늘의 컨디션 (0-100)
+  const [health, setHealth] = useState<string>('50');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('today_health');
+      if (saved) setHealth(saved);
+    }
+  }, []);
+  
+  // 마이크로 로그와 STAR 회고 합치기
+  const microLogs = recentLogs?.data?.logs || [];
+  const starReflectionsList = starReflections?.data?.reflections || [];
+  const starLogs = starReflectionsList.map((reflection: any) => ({
+    id: reflection.id,
+    activity_type: 'reflection',
+    activity_label: reflection.template_name || 'AI 회고',
+    activity_icon: '✨',
+    memo: Object.values(reflection.answers || {}).join(' ').substring(0, 100),
+    date: reflection.created_at,
+    tags: reflection.competencies || [],
+    isStarReflection: true,
+  }));
+  
+  // 날짜순으로 정렬하여 합치기
+  const logs = [...microLogs, ...starLogs]
+    .sort((a, b) => new Date(b.date || b.created_at).getTime() - new Date(a.date || a.created_at).getTime())
+    .slice(0, 7);
+  
+  // 통계에 STAR 회고 포함
+  const baseStats = weekStats?.data || {};
+  const stats = {
+    ...baseStats,
+    total_logs: (baseStats.total_logs || 0) + starReflectionsList.length,
+  };
 
   return (
     <div className="min-h-screen bg-[#F1F2F3]">
@@ -47,49 +107,67 @@ export default function ReflectionsPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-[#1B1C1E] mb-2">성장 회고</h1>
+              <h1 className="text-3xl font-bold text-[#1B1C1E] mb-2">경험정리</h1>
               <p className="text-[#6B6D70]">경험을 기록하고, 성장 패턴을 발견하세요</p>
             </div>
-            
-            <button
-              onClick={() => {
-                if (needsBaseline) {
-                  router.push('/dashboard/reflections/baseline');
-                } else {
-                  router.push('/dashboard/reflections/micro');
-                }
-              }}
-              className="btn-primary flex items-center gap-2"
-            >
-              <Plus className="w-5 h-5" />
-              <span>간단하게 회고하기</span>
-            </button>
+            <div className="flex items-center gap-3">
+                <button
+                  onClick={() => router.push('/dashboard/reflections/survey')}
+                  className="btn-primary flex items-center gap-2 bg-gradient-to-r from-[#25A778] to-[#2DC98E]"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  <span>AI 회고 시작하기</span>
+                </button>
+                {/* 팀 공유 기능은 스페이스 생성에서 관리합니다 */}
+            </div>
           </div>
 
-          {/* Baseline 설정 필요 알림 */}
-          {needsBaseline && (
-            <div className="bg-gradient-to-r from-[#DDF3EB] to-[#E8F1FF] rounded-xl p-6 border-2 border-[#25A778]/30 mb-6">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Sparkles className="w-6 h-6 text-[#25A778]" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-[#186D50] mb-2">
-                    시작하기 전에 간단한 설정이 필요해요
-                  </h3>
-                  <p className="text-sm text-[#186D50] mb-3">
-                    님의 평소 기분을 알려주시면, 더 정확한 분석과 추천을 해드릴 수 있어요 (30초 소요)
-                  </p>
-                  <button
-                    onClick={() => router.push('/dashboard/reflections/baseline')}
-                    className="px-4 py-2 bg-white text-[#25A778] rounded-lg font-medium hover:bg-[#F8F9FA] transition-all"
-                  >
-                    지금 설정하기 →
-                  </button>
+          {/* 오늘의 컨디션 (0-100) */}
+          <div className="bg-gradient-to-r from-[#FFF7ED] to-[#FFFBF0] rounded-xl p-6 border-2 border-[#FFDAB9]/40 mb-6">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center flex-shrink-0">
+                <Heart className="w-6 h-6 text-[#EF4444]" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-[#6B2A00] mb-2">오늘의 컨디션</h3>
+                <p className="text-sm text-[#6B2A00] mb-3">오늘의 기분 혹은 팀의 상태를 0(매우 나쁨) ~ 100(매우 좋음)으로 체크해주세요.</p>
+                <div className="flex items-center gap-3">
+                  <input
+                    id="healthRange"
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={Number(health)}
+                    className="w-64"
+                    onChange={async (e) => {
+                      const v = e.currentTarget.value;
+                      setHealth(v);
+                      localStorage.setItem('today_health', v);
+
+                      // Save to backend
+                      try {
+                        await fetch('/api/v1/health-check', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                            'x-user-id': localStorage.getItem('x-user-id') || 'dev-user-default',
+                          },
+                          body: JSON.stringify({
+                            health_score: parseInt(v),
+                            date: new Date().toISOString().split('T')[0]
+                          })
+                        });
+                      } catch (error) {
+                        console.error('Failed to save health check:', error);
+                      }
+                    }}
+                  />
+                  <span className="text-sm text-[#6B6D70]">현재: <strong>{health}점</strong></span>
                 </div>
               </div>
             </div>
-          )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -131,40 +209,34 @@ export default function ReflectionsPage() {
         {/* 빠른 액션 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           <button
-            onClick={() => {
-              if (needsBaseline) {
-                router.push('/dashboard/reflections/baseline');
-              } else {
-                router.push('/dashboard/reflections/micro');
-              }
-            }}
-            className="card hover:shadow-lg transition-all cursor-pointer text-left bg-gradient-to-br from-white to-[#DDF3EB]"
+            onClick={() => router.push('/dashboard/reflections/survey')}
+            className="card hover:shadow-lg transition-all cursor-pointer text-left bg-gradient-to-br from-[#25A778] to-[#2DC98E] text-white"
           >
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-[#25A778] rounded-xl flex items-center justify-center flex-shrink-0">
-                <Plus className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="font-bold text-[#1B1C1E] mb-1">초라이트 기록</h3>
-                <p className="text-sm text-[#6B6D70]">
-                  1분 안에 빠르게 오늘의 활동 기록하기
+                <h3 className="font-bold mb-1">AI 회고 시작</h3>
+                <p className="text-sm text-white/90">
+                  설문으로 맞춤 템플릿 추천받고 회고하기
                 </p>
               </div>
             </div>
           </button>
 
           <button
-            onClick={() => router.push('/dashboard/reflections/story')}
+            onClick={() => router.push('/dashboard/reflections/micro')}
             className="card hover:shadow-lg transition-all cursor-pointer text-left bg-gradient-to-br from-white to-[#E8F1FF]"
           >
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#418CC3] rounded-xl flex items-center justify-center flex-shrink-0">
-                <BookOpen className="w-6 h-6 text-white" />
+                <Plus className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="font-bold text-[#1B1C1E] mb-1">나의 성장 스토리</h3>
+                <h3 className="font-bold text-[#1B1C1E] mb-1">빠른 기록</h3>
                 <p className="text-sm text-[#6B6D70]">
-                  최근 활동을 분석한 스토리 보기
+                  간단하게 오늘의 활동 기록하기
                 </p>
               </div>
             </div>
@@ -191,11 +263,7 @@ export default function ReflectionsPage() {
               <p className="text-[#6B6D70] mb-4">아직 기록이 없어요</p>
               <button
                 onClick={() => {
-                  if (needsBaseline) {
-                    router.push('/dashboard/reflections/baseline');
-                  } else {
                     router.push('/dashboard/reflections/micro');
-                  }
                 }}
                 className="btn-primary"
               >
@@ -204,38 +272,47 @@ export default function ReflectionsPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {logs.map((log: any) => (
-                <div
-                  key={log.id}
-                  className="p-4 bg-[#F8F9FA] rounded-xl hover:bg-white border-2 border-transparent hover:border-[#EAEBEC] transition-all cursor-pointer"
-                  onClick={() => router.push(`/dashboard/reflections/${log.id}`)}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="text-3xl flex-shrink-0">{log.activity_icon}</div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium text-[#1B1C1E]">{log.activity_label}</span>
-                        <span className="text-xs text-[#6B6D70]">
-                          {new Date(log.date).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}
-                        </span>
-                      </div>
-                      {log.memo && (
-                        <p className="text-sm text-[#6B6D70] line-clamp-1">{log.memo}</p>
-                      )}
-                      <div className="flex items-center gap-2 mt-2">
-                        {log.tags?.map((tag: string) => (
-                          <span key={tag} className="px-2 py-1 bg-white rounded text-xs text-[#6B6D70]">
-                            {tag}
+              {logs.map((log: any) => {
+                const activityInfo = log.isStarReflection 
+                  ? { icon: log.activity_icon || '✨', label: log.activity_label || 'AI 회고' }
+                  : getActivityInfo(log.activity_type);
+                
+                return (
+                  <div
+                    key={log.id}
+                    className="p-4 bg-[#F8F9FA] rounded-xl hover:bg-white border-2 border-transparent hover:border-[#EAEBEC] transition-all cursor-pointer"
+                    onClick={() => router.push(`/dashboard/reflections/${log.id}`)}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="text-3xl flex-shrink-0">{activityInfo.icon}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-medium text-[#1B1C1E]">{activityInfo.label}</span>
+                          {log.isStarReflection && (
+                            <span className="px-2 py-0.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs rounded-full">
+                              AI
+                            </span>
+                          )}
+                          <span className="text-xs text-[#6B6D70]">
+                            {new Date(log.date || log.created_at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}
                           </span>
-                        ))}
+                        </div>
+                        {log.memo && (
+                          <p className="text-sm text-[#6B6D70] line-clamp-1">{log.memo}</p>
+                        )}
+                        <div className="flex items-center gap-2 mt-2">
+                          {log.tags?.slice(0, 3).map((tag: string) => (
+                            <span key={tag} className="px-2 py-1 bg-white rounded text-xs text-[#6B6D70]">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                    <div className="text-2xl flex-shrink-0">
-                      {log.mood_emoji}
+                      {/* mood icon removed - health check replaces daily mood */}
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -269,6 +346,8 @@ export default function ReflectionsPage() {
             </div>
           </div>
         )}
+
+        {/* 팀 초대 모달 제거: 스페이스 생성에서 초대 기능 제공 */}
       </div>
     </div>
   );

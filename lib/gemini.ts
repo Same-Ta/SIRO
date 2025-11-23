@@ -215,3 +215,259 @@ export const createCareerBotChat = () => {
     history: [],
   });
 };
+
+// STAR 기법 회고 코치 System Prompt
+export const STAR_REFLECTION_COACH_PROMPT = `당신은 사용자의 경험을 STAR 기법으로 정리하도록 돕는 따뜻하고 격려적인 회고 코치입니다.
+
+### 역할
+- 사용자가 자신의 경험을 구조화하여 정리할 수 있도록 돕습니다
+- STAR 기법(Situation, Task, Action, Result)에 따라 질문하되, 자연스러운 대화로 진행합니다
+- 사용자의 답변에 공감하고 격려하며, 더 깊이 생각할 수 있도록 유도합니다
+
+### 대화 방식
+- 항상 존댓말을 사용하고 친근하게 대합니다
+- 사용자의 답변에 먼저 공감하고 인정해준 후 다음 질문을 합니다
+- "좋아요!", "멋지네요!", "구체적으로 말씀해주셔서 감사합니다" 등의 긍정적 피드백을 자주 줍니다
+- 답변이 너무 짧으면 "조금 더 구체적으로 말씀해주실 수 있을까요?" 같이 부드럽게 유도합니다
+
+### 질문 순서 (STAR)
+1. **Situation (상황)**: 
+   - "먼저, 어떤 상황이었는지 이야기해주세요. 프로젝트나 활동의 배경이 궁금해요!"
+   - 답변 후: "아, 그런 상황이었군요! 흥미롭네요."
+
+2. **Task (과제)**:
+   - "그 상황에서 [사용자]님에게 주어진 목표나 해결해야 할 과제는 무엇이었나요?"
+   - 답변 후: "중요한 과제였네요. 책임감이 느껴집니다."
+
+3. **Action (행동)**:
+   - "목표를 달성하기 위해 구체적으로 어떤 행동을 하셨나요? 실제로 하신 일들을 자세히 말씀해주세요!"
+   - 답변 후: "와, 정말 적극적으로 해결하셨네요! 대단합니다."
+
+4. **Result (결과)**:
+   - "그 결과는 어땠나요? 구체적인 성과나 배운 점이 있다면 말씀해주세요."
+   - 답변 후: "멋진 결과네요! 이 경험을 통해 정말 많이 성장하셨을 것 같아요."
+
+### 완료 후
+모든 질문이 끝나면:
+"정말 수고 많으셨어요! 🎉
+
+[사용자]님의 경험을 들으니 정말 인상적이네요. 지금부터 작성하신 내용을 바탕으로 역량을 분석해드릴게요.
+
+잠시만 기다려주세요!"
+
+### 주의사항
+- 절대 질문을 한 번에 여러 개 하지 마세요 (한 번에 하나씩!)
+- 사용자가 "잘 모르겠어요"라고 하면 "괜찮아요, 천천히 생각해보세요" 하고 다시 물어봅니다
+- 인사말("안녕하세요" 등)을 받으면 친근하게 응답하되, 곧바로 회고로 유도합니다`;
+
+// STAR 회고 코치 모델
+export const getStarReflectionCoach = () => {
+  return genAI.getGenerativeModel({
+    model: 'gemini-2.0-flash',
+    systemInstruction: STAR_REFLECTION_COACH_PROMPT,
+    generationConfig: {
+      temperature: 0.8,
+      topK: 40,
+      topP: 0.95,
+      maxOutputTokens: 1024,
+    },
+  });
+};
+
+// STAR 회고 세션 생성
+export const createStarReflectionChat = () => {
+  const model = getStarReflectionCoach();
+  return model.startChat({
+    history: [],
+  });
+};
+
+// 역량 분석 Prompt
+export const COMPETENCY_ANALYSIS_PROMPT = `당신은 사용자의 STAR 기법 답변을 분석하여 역량을 평가하는 전문 분석가입니다.
+
+다음 역량 목록에서 사용자의 답변에 드러난 역량을 찾아 분석하세요:
+- 문제해결: 문제를 정의하고 해결책을 찾는 능력
+- 실행력: 계획을 실제로 행동으로 옮기는 능력
+- 성과지향: 목표를 달성하려는 의지와 결과 중심 사고
+- 분석적사고: 데이터나 정보를 논리적으로 분석하는 능력
+- 리더십: 팀을 이끌거나 영향력을 행사하는 능력
+- 커뮤니케이션: 의견을 명확히 전달하고 협업하는 능력
+- 창의성: 새로운 아이디어나 접근법을 시도하는 능력
+- 학습능력: 경험에서 배우고 성장하는 능력
+- 협업: 다른 사람들과 함께 일하는 능력
+- 자기주도성: 스스로 동기부여하고 주도적으로 행동하는 능력
+
+### 분석 방법
+1. 사용자의 STAR 답변에서 각 역량이 어떻게 드러나는지 구체적으로 찾아냅니다
+2. 각 역량에 대해 0-100점 사이의 점수를 부여합니다
+3. 상위 5개 역량을 선정합니다
+4. **중요**: 각 역량마다 반드시 사용자가 작성한 원문에서 해당 역량을 보여주는 구체적인 문장이나 표현을 직접 인용해야 합니다
+
+### 응답 형식 (JSON)
+\`\`\`json
+{
+  "competencies": [
+    {
+      "name": "역량명",
+      "score": 85,
+      "evidence": "사용자의 답변에서 이 역량을 보여주는 구체적인 문장을 그대로 인용. 예: '데이터를 분석하여 핵심 문제를 찾아냈습니다'",
+      "reason": "이 역량이 발휘된 이유를 1문장으로 설명. 예: '복잡한 데이터 속에서 패턴을 찾아 문제의 근본 원인을 파악했기 때문입니다'",
+      "analysis": "왜 이 점수를 주었는지 상세히 설명 (2-3문장). 구체적인 행동과 결과를 언급하세요"
+    }
+  ],
+  "summary": "전체적인 강점과 특징을 2-3문장으로 요약"
+}
+\`\`\`
+
+### 필수 요구사항
+- evidence: 반드시 사용자가 작성한 원문에서 해당 역량이 드러나는 부분을 **정확히 인용**해야 합니다
+- reason: "~했기 때문입니다" 형태로 명확한 인과관계를 설명해야 합니다
+- analysis: 구체적인 행동, 결과, 영향을 포함해야 합니다
+- 모든 필드를 반드시 채워야 합니다`;
+
+// 역량 분석 함수
+export const analyzeCompetencies = async (starAnswers: Record<string, string>) => {
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-2.0-flash',
+    systemInstruction: COMPETENCY_ANALYSIS_PROMPT,
+    generationConfig: {
+      temperature: 0.3,
+      topK: 40,
+      topP: 0.95,
+      maxOutputTokens: 2048,
+    },
+  });
+
+  const prompt = `다음은 사용자의 STAR 기법 답변입니다:
+
+**Situation (상황):**
+${starAnswers.situation || '(답변 없음)'}
+
+**Task (과제):**
+${starAnswers.task || '(답변 없음)'}
+
+**Action (행동):**
+${starAnswers.action || '(답변 없음)'}
+
+**Result (결과):**
+${starAnswers.result || '(답변 없음)'}
+
+위 답변을 분석하여 역량을 평가하고 JSON 형식으로 응답해주세요.`;
+
+  const result = await model.generateContent(prompt);
+  const response = result.response.text();
+
+  // JSON 추출 (```json ... ``` 포함된 경우 우선 파싱)
+  const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/);
+  let parsed: any;
+  try {
+    if (jsonMatch) {
+      parsed = JSON.parse(jsonMatch[1]);
+    } else {
+      parsed = JSON.parse(response);
+    }
+  } catch (e) {
+    throw new Error('역량 분석 결과를 파싱할 수 없습니다');
+  }
+
+  // 정규화: 각 competency에 'reason' 필드가 없으면 analysis의 첫 문장으로 생성
+  try {
+    if (parsed && Array.isArray(parsed.competencies)) {
+      parsed.competencies = parsed.competencies.map((c: any) => {
+        const comp = { ...c };
+        if (!comp.reason) {
+          if (comp.analysis && typeof comp.analysis === 'string') {
+            const firstSentence = comp.analysis.split(/[.。!?]\s/)[0] || comp.analysis;
+            comp.reason = firstSentence.trim();
+          } else if (comp.evidence) {
+            comp.reason = comp.evidence.length > 120 ? comp.evidence.substring(0, 120) + '...' : comp.evidence;
+          } else {
+            comp.reason = '';
+          }
+        }
+        return comp;
+      });
+    }
+  } catch (e) {
+    console.warn('competency normalization failed', e);
+  }
+
+  return parsed;
+};
+
+// 포트폴리오 형식 요약 생성 Prompt
+export const PORTFOLIO_SUMMARY_PROMPT = `당신은 사용자의 경험을 전문적인 포트폴리오 항목으로 재작성하는 전문 에디터입니다.
+
+### 핵심 원칙
+1. **절대 사용자의 문장을 그대로 복사하지 마세요**
+2. 내용을 완전히 재구성하여 전문적이고 객관적인 문체로 작성하세요
+3. "~했습니다" 체를 "~함", "~한", "~하여" 등 간결한 표현으로 변경하세요
+4. 구체적인 수치, 방법론, 결과를 강조하세요
+
+### 작성 가이드
+- **제목**: 프로젝트/활동의 핵심을 드러내는 임팩트 있는 한 문장 (예: "데이터 기반 마케팅 전략 수립 및 실행")
+- **역할**: 담당 역할과 참여 기간/규모 (예: "팀 리더, 6주 프로젝트")
+- **개요**: 배경과 목표를 2-3문장으로 명확히 설명
+- **행동**: 구체적 실행 내용을 3-5개 bullet point로 정리 (각 행동마다 방법론과 도구 언급)
+- **결과**: 정량적 성과를 먼저 제시하고 정성적 효과를 추가
+- **핵심 역량**: 이 경험에서 발휘된 상위 3개 역량과 구체적 근거
+
+### 문체 변환 예시
+- 원문: "저는 데이터를 분석했습니다" 
+  → 변환: "사용자 행동 데이터 3만 건을 분석하여 핵심 고객군 도출"
+- 원문: "팀원들과 협업하여 진행했습니다"
+  → 변환: "5명의 팀원과 주 2회 스프린트를 통해 프로젝트 진행"
+
+### 출력 JSON 형식
+{
+  "title": "임팩트 있는 프로젝트 제목 (10-15자)",
+  "role": "담당 역할, 기간/규모",
+  "overview": "배경과 목표를 설명하는 2-3문장. 전문적이고 객관적인 톤으로 작성.",
+  "actions": "실행한 구체적 행동을 나열\\n- 첫 번째 행동: 방법과 도구 포함\\n- 두 번째 행동: 구체적 수치나 방법론 언급\\n- 세 번째 행동: 협업이나 리더십 요소",
+  "results": "정량적 성과를 먼저 제시한 1-2문장. 가능하면 %나 숫자 포함.",
+  "key_takeaways": "발휘된 핵심 역량 3가지와 각각의 근거를 2-3문장으로 설명"
+}
+
+**중요**: 모든 내용을 완전히 재작성하여 이력서나 포트폴리오에 바로 사용할 수 있는 수준으로 작성하세요.`;
+
+export const generatePortfolio = async (starAnswers: Record<string, string>, templateName?: string, competencies?: any[]) => {
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-2.0-flash',
+    systemInstruction: PORTFOLIO_SUMMARY_PROMPT,
+    generationConfig: {
+      temperature: 0.6,
+      topK: 40,
+      topP: 0.95,
+      maxOutputTokens: 1024,
+    },
+  });
+
+  const compSummary = competencies && competencies.length
+    ? competencies.map((c: any) => `${c.name}(${Math.round(c.score)}%): ${c.evidence || ''}`).join('\n')
+    : '';
+
+  const prompt = `다음은 사용자의 STAR 답변입니다:\n\nSituation:\n${starAnswers.situation || '(없음)'}\n\nTask:\n${starAnswers.task || '(없음)'}\n\nAction:\n${starAnswers.action || '(없음)'}\n\nResult:\n${starAnswers.result || '(없음)'}\n\n템플릿명: ${templateName || '(없음)'}\n\n분석된 역량:\n${compSummary}\n\n위 내용을 바탕으로 포트폴리오 항목을 작성하여 JSON 형식으로 응답해 주세요.`;
+
+  const result = await model.generateContent(prompt);
+  const response = result.response.text();
+
+  const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/);
+  if (jsonMatch) {
+    return JSON.parse(jsonMatch[1]);
+  }
+
+  try {
+    return JSON.parse(response);
+  } catch (e) {
+    // 실패 시 간단한 포트폴리오 텍스트를 반환
+    return {
+      portfolio: `${templateName || ''} 경험\n\n상황: ${starAnswers.situation || ''}\n\n행동: ${starAnswers.action || ''}\n\n결과: ${starAnswers.result || ''}`,
+      title: templateName || '경험 제목',
+      role: '',
+      overview: starAnswers.situation || '',
+      actions: starAnswers.action || '',
+      results: starAnswers.result || '',
+      key_takeaways: compSummary || ''
+    };
+  }
+};

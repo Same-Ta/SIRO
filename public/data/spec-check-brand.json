@@ -1,0 +1,189 @@
+{
+  "spec_check_id": "brand_spec_v1",
+  "job_category": "brand",
+  "title": "브랜드/상품기획 직무 스펙체크",
+  "description": "브랜드·상품기획 직군 내 세부 직무(브랜드 전략, 상품 기획, BX/UX, 네이밍/BI 등)를 판별하는 설문입니다.",
+  "estimated_time": "3-5분",
+  "response_type": "likert_5",
+  "subtypes": [
+    {
+      "id": "brand_strategy",
+      "name": "브랜드 전략",
+      "name_en": "Brand Strategy",
+      "description": "브랜드 포지셔닝과 장기 전략 수립"
+    },
+    {
+      "id": "product_planning",
+      "name": "상품 기획(PM/PO)",
+      "name_en": "Product Planning",
+      "description": "제품/서비스 기획과 로드맵 관리"
+    },
+    {
+      "id": "bx_ux",
+      "name": "BX/UX 기획",
+      "name_en": "BX/UX",
+      "description": "브랜드 경험과 사용자 경험 설계"
+    },
+    {
+      "id": "naming_bi",
+      "name": "네이밍/BI",
+      "name_en": "Naming/Brand Identity",
+      "description": "브랜드 네이밍과 아이덴티티 디자인"
+    }
+  ],
+  "questions": [
+    {
+      "id": "b1",
+      "text": "브랜드 포지셔닝이나 핵심 메시지를 정의해본 경험이 있다.",
+      "weights": {
+        "brand_strategy": 3
+      }
+    },
+    {
+      "id": "b2",
+      "text": "제품 기획서(PRD)나 기능 명세를 작성해본 경험이 있다.",
+      "weights": {
+        "product_planning": 3
+      }
+    },
+    {
+      "id": "b3",
+      "text": "사용자 리서치나 인터뷰를 진행해본 경험이 있다.",
+      "weights": {
+        "bx_ux": 3,
+        "product_planning": 1
+      }
+    },
+    {
+      "id": "b4",
+      "text": "브랜드 네이밍이나 슬로건을 만들어본 경험이 있다.",
+      "weights": {
+        "naming_bi": 3
+      }
+    },
+    {
+      "id": "b5",
+      "text": "경쟁사 분석이나 시장 조사를 통해 브랜드 전략을 제안한 적이 있다.",
+      "weights": {
+        "brand_strategy": 2,
+        "product_planning": 1
+      }
+    },
+    {
+      "id": "b6",
+      "text": "고객 여정 맵(Customer Journey Map)을 그려본 경험이 있다.",
+      "weights": {
+        "bx_ux": 3
+      }
+    },
+    {
+      "id": "b7",
+      "text": "프로토타이핑 툴(Figma, Sketch 등)을 사용해본 경험이 있다.",
+      "weights": {
+        "bx_ux": 2,
+        "product_planning": 1
+      }
+    },
+    {
+      "id": "b8",
+      "text": "제품 로드맵이나 우선순위를 설정해본 경험이 있다.",
+      "weights": {
+        "product_planning": 3
+      }
+    },
+    {
+      "id": "b9",
+      "text": "브랜드 스토리텔링이나 콘텐츠 기획에 관심이 많다.",
+      "weights": {
+        "brand_strategy": 2,
+        "naming_bi": 1
+      }
+    },
+    {
+      "id": "b10",
+      "text": "디자인 시스템이나 브랜드 가이드라인 작성 경험이 있다.",
+      "weights": {
+        "naming_bi": 2,
+        "bx_ux": 1
+      }
+    },
+    {
+      "id": "b11",
+      "text": "가격 정책이나 프로모션 전략을 수립해본 경험이 있다.",
+      "weights": {
+        "product_planning": 2,
+        "brand_strategy": 1
+      }
+    },
+    {
+      "id": "b12",
+      "text": "사용자 페인포인트를 발견하고 솔루션을 제안한 경험이 있다.",
+      "weights": {
+        "bx_ux": 2,
+        "product_planning": 2
+      }
+    },
+    {
+      "id": "b13",
+      "text": "브랜드 리뉴얼이나 리포지셔닝 프로젝트에 참여해본 적이 있다.",
+      "weights": {
+        "brand_strategy": 2,
+        "naming_bi": 2
+      }
+    },
+    {
+      "id": "b14",
+      "text": "고객 데이터나 사용 패턴을 분석해본 경험이 있다.",
+      "weights": {
+        "product_planning": 2,
+        "bx_ux": 1
+      }
+    },
+    {
+      "id": "b15",
+      "text": "개발팀이나 디자인팀과 협업해본 경험이 많다.",
+      "weights": {
+        "product_planning": 2,
+        "bx_ux": 2
+      }
+    },
+    {
+      "id": "b16",
+      "text": "브랜드 일관성(Tone & Manner)을 유지하는 것이 중요하다고 생각한다.",
+      "weights": {
+        "brand_strategy": 2,
+        "naming_bi": 1
+      }
+    },
+    {
+      "id": "b17",
+      "text": "와이어프레임이나 유저 플로우를 그려본 경험이 있다.",
+      "weights": {
+        "bx_ux": 3
+      }
+    },
+    {
+      "id": "b18",
+      "text": "신제품 출시(GTM) 전략을 수립해본 경험이 있다.",
+      "weights": {
+        "product_planning": 2,
+        "brand_strategy": 1
+      }
+    },
+    {
+      "id": "b19",
+      "text": "브랜드 아이덴티티(BI) 작업이나 로고 디자인에 관심이 많다.",
+      "weights": {
+        "naming_bi": 3
+      }
+    },
+    {
+      "id": "b20",
+      "text": "A/B 테스트나 사용성 테스트를 설계하고 분석해본 경험이 있다.",
+      "weights": {
+        "bx_ux": 2,
+        "product_planning": 1
+      }
+    }
+  ]
+}

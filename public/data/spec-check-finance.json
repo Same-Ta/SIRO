@@ -1,0 +1,195 @@
+{
+  "spec_check_id": "finance_spec_v1",
+  "job_category": "finance",
+  "title": "재무/회계 직무 스펙체크",
+  "description": "재무·회계 직군 내 세부 직무(재무회계, 관리회계, FP&A, 세무, IR 등)를 판별하는 설문입니다.",
+  "estimated_time": "3-5분",
+  "response_type": "likert_5",
+  "subtypes": [
+    {
+      "id": "financial_accounting",
+      "name": "재무회계",
+      "name_en": "Financial Accounting",
+      "description": "재무제표 작성과 회계 처리"
+    },
+    {
+      "id": "management_accounting",
+      "name": "관리회계",
+      "name_en": "Management Accounting",
+      "description": "원가 분석과 내부 의사결정 지원"
+    },
+    {
+      "id": "fpa",
+      "name": "FP&A(재무기획)",
+      "name_en": "FP&A",
+      "description": "예산, 예측, 재무 분석"
+    },
+    {
+      "id": "tax",
+      "name": "세무",
+      "name_en": "Tax",
+      "description": "세무 신고와 절세 전략"
+    },
+    {
+      "id": "ir",
+      "name": "IR/투자관리",
+      "name_en": "Investor Relations",
+      "description": "투자자 관계와 자금 조달"
+    }
+  ],
+  "questions": [
+    {
+      "id": "f1",
+      "text": "재무제표(재무상태표, 손익계산서 등)를 작성하거나 분석해본 경험이 있다.",
+      "weights": {
+        "financial_accounting": 3,
+        "fpa": 1
+      }
+    },
+    {
+      "id": "f2",
+      "text": "회계 분개나 전표 처리를 해본 경험이 있다.",
+      "weights": {
+        "financial_accounting": 3
+      }
+    },
+    {
+      "id": "f3",
+      "text": "원가 계산이나 손익 분석을 해본 경험이 있다.",
+      "weights": {
+        "management_accounting": 3
+      }
+    },
+    {
+      "id": "f4",
+      "text": "예산 수립이나 예산 대비 실적 분석을 해본 경험이 있다.",
+      "weights": {
+        "fpa": 3,
+        "management_accounting": 1
+      }
+    },
+    {
+      "id": "f5",
+      "text": "세무 신고(부가세, 법인세 등)나 절세 전략에 관심이 많다.",
+      "weights": {
+        "tax": 3
+      }
+    },
+    {
+      "id": "f6",
+      "text": "투자 자료나 IR 보고서를 작성해본 경험이 있다.",
+      "weights": {
+        "ir": 3
+      }
+    },
+    {
+      "id": "f7",
+      "text": "재무 모델링(DCF, NPV 등)을 해본 경험이 있다.",
+      "weights": {
+        "fpa": 2,
+        "ir": 2
+      }
+    },
+    {
+      "id": "f8",
+      "text": "회계 기준(K-IFRS, GAAP 등)에 대한 이해가 있다.",
+      "weights": {
+        "financial_accounting": 2,
+        "tax": 1
+      }
+    },
+    {
+      "id": "f9",
+      "text": "ERP 시스템(SAP, Oracle 등)을 사용해본 경험이 있다.",
+      "weights": {
+        "financial_accounting": 2,
+        "management_accounting": 1
+      }
+    },
+    {
+      "id": "f10",
+      "text": "부서별 예산 배분이나 실적 관리를 해본 경험이 있다.",
+      "weights": {
+        "management_accounting": 2,
+        "fpa": 1
+      }
+    },
+    {
+      "id": "f11",
+      "text": "재무 비율(ROE, ROA, 유동비율 등) 분석에 익숙하다.",
+      "weights": {
+        "fpa": 2,
+        "financial_accounting": 1
+      }
+    },
+    {
+      "id": "f12",
+      "text": "세무 조사 대응이나 세무 리스크 관리에 관심이 있다.",
+      "weights": {
+        "tax": 3
+      }
+    },
+    {
+      "id": "f13",
+      "text": "투자자나 금융기관과 커뮤니케이션한 경험이 있다.",
+      "weights": {
+        "ir": 2,
+        "fpa": 1
+      }
+    },
+    {
+      "id": "f14",
+      "text": "감사(내부감사, 외부감사) 업무에 참여해본 경험이 있다.",
+      "weights": {
+        "financial_accounting": 2,
+        "tax": 1
+      }
+    },
+    {
+      "id": "f15",
+      "text": "월/분기 재무 리포트를 작성하고 경영진에게 보고한 경험이 있다.",
+      "weights": {
+        "fpa": 2,
+        "financial_accounting": 1
+      }
+    },
+    {
+      "id": "f16",
+      "text": "자금 조달(대출, 투자 유치 등) 업무에 관심이 많다.",
+      "weights": {
+        "ir": 3
+      }
+    },
+    {
+      "id": "f17",
+      "text": "원가 절감이나 수익성 개선 프로젝트에 참여한 경험이 있다.",
+      "weights": {
+        "management_accounting": 2,
+        "fpa": 1
+      }
+    },
+    {
+      "id": "f18",
+      "text": "세법이나 조세 정책 변화를 주시하는 편이다.",
+      "weights": {
+        "tax": 2
+      }
+    },
+    {
+      "id": "f19",
+      "text": "재무 데이터를 시각화하고 대시보드를 만든 경험이 있다.",
+      "weights": {
+        "fpa": 2,
+        "management_accounting": 1
+      }
+    },
+    {
+      "id": "f20",
+      "text": "주식 평가나 밸류에이션에 관심이 많다.",
+      "weights": {
+        "ir": 2,
+        "fpa": 1
+      }
+    }
+  ]
+}

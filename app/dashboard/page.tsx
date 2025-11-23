@@ -68,6 +68,35 @@ export default function DashboardPage() {
       </div>
 
       <div className="px-8 pb-8">
+        {/* 직무 선택 배너 */}
+        <div className="mb-8">
+          <Link href="/dashboard/career">
+            <div className="bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 rounded-[24px] p-8 text-white cursor-pointer hover:shadow-xl transition-all relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24"></div>
+              <div className="relative z-10">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-4xl">🎯</span>
+                      <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold">NEW</span>
+                    </div>
+                    <h2 className="text-2xl font-bold mb-2">나에게 맞는 직무를 찾아보세요</h2>
+                    <p className="text-white/90 text-sm mb-4">
+                      상경계열 학생을 위한 직무 적합도 검사 • 약 5-7분 소요
+                    </p>
+                    <div className="inline-flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full text-sm font-semibold">
+                      <span>설문 시작하기</span>
+                      <span>→</span>
+                    </div>
+                  </div>
+                  <div className="text-8xl opacity-50">📊</div>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
+
         {/* Section Header */}
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-3">

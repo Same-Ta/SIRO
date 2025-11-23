@@ -1,0 +1,500 @@
+{
+  "survey_id": "general_career_v1",
+  "title": "진로 탐색 일반 설문",
+  "description": "상경계열 학생을 위한 직무 적합도 및 선호도 평가 설문입니다. 약 5-7분 소요됩니다.",
+  "target_audience": "상경계열(경영, 경제 등) 대학생",
+  "instructions": "각 문항에 대해 가장 가까운 답변을 선택해주세요. 정답은 없으며, 솔직하게 응답할수록 정확한 결과를 얻을 수 있습니다.",
+  "response_type": "likert_5",
+  "response_labels": {
+    "1": "전혀 아니다",
+    "2": "아니다",
+    "3": "보통이다",
+    "4": "그렇다",
+    "5": "매우 그렇다"
+  },
+  "questions": [
+    {
+      "id": "q1",
+      "type": "likert",
+      "category": "creativity",
+      "text": "팀 프로젝트에서 아이디어나 콘텐츠를 만드는 역할을 주로 맡는다.",
+      "weights": {
+        "marketing": 2,
+        "brand": 2,
+        "strategy": 1
+      }
+    },
+    {
+      "id": "q2",
+      "type": "likert",
+      "category": "analytical",
+      "text": "데이터를 보고 인사이트를 도출하는 편이다.",
+      "weights": {
+        "data": 3,
+        "finance": 1,
+        "marketing": 1
+      }
+    },
+    {
+      "id": "q3",
+      "type": "likert",
+      "category": "numerical",
+      "text": "숫자, 엑셀, 재무제표를 보는 것을 즐긴다.",
+      "weights": {
+        "finance": 3,
+        "data": 1
+      }
+    },
+    {
+      "id": "q4",
+      "type": "likert",
+      "category": "interpersonal",
+      "text": "사람들과의 대면 커뮤니케이션(영업/협상)이 편하다.",
+      "weights": {
+        "sales": 3,
+        "marketing": 1
+      }
+    },
+    {
+      "id": "q5",
+      "type": "likert",
+      "category": "process",
+      "text": "조직의 규칙이나 프로세스 개선에 흥미가 있다.",
+      "weights": {
+        "operations": 2,
+        "strategy": 1,
+        "hr": 1
+      }
+    },
+    {
+      "id": "q6",
+      "type": "likert",
+      "category": "people_management",
+      "text": "팀 분위기를 조율하고 사람을 관리하는 역할을 자주 맡는다.",
+      "weights": {
+        "hr": 3,
+        "sales": 1
+      }
+    },
+    {
+      "id": "q7",
+      "type": "likert",
+      "category": "product",
+      "text": "제품 아이디어나 기획(무엇을 만들지 고민)하는 것을 좋아한다.",
+      "weights": {
+        "brand": 3,
+        "strategy": 1
+      }
+    },
+    {
+      "id": "q8",
+      "type": "likert",
+      "category": "branding",
+      "text": "브랜드 메시지나 스토리텔링을 만드는 데 흥미가 있다.",
+      "weights": {
+        "brand": 2,
+        "marketing": 2
+      }
+    },
+    {
+      "id": "q9",
+      "type": "likert",
+      "category": "growth",
+      "text": "실험(A/B 테스트) 설계 및 성장지표 분석 경험이 있거나 해보고 싶다.",
+      "weights": {
+        "marketing": 3,
+        "data": 2
+      }
+    },
+    {
+      "id": "q10",
+      "type": "likert",
+      "category": "presentation",
+      "text": "발표나 보고서를 통해 설득하는 것을 잘한다.",
+      "weights": {
+        "strategy": 2,
+        "sales": 1,
+        "marketing": 1
+      }
+    },
+    {
+      "id": "q11",
+      "type": "likert",
+      "category": "customer",
+      "text": "고객 행동을 관찰하고 페인포인트를 찾는 것을 좋아한다.",
+      "weights": {
+        "marketing": 2,
+        "data": 1,
+        "brand": 1
+      }
+    },
+    {
+      "id": "q12",
+      "type": "likert",
+      "category": "planning",
+      "text": "규칙을 세우고 일정, 예산 관리를 잘한다.",
+      "weights": {
+        "operations": 2,
+        "finance": 1,
+        "strategy": 1
+      }
+    },
+    {
+      "id": "q13",
+      "type": "likert",
+      "category": "content",
+      "text": "창의적인 카피나 콘텐츠 제작(글/영상)에 관심이 많다.",
+      "weights": {
+        "marketing": 2,
+        "brand": 1
+      }
+    },
+    {
+      "id": "q14",
+      "type": "likert",
+      "category": "agility",
+      "text": "빠르게 상황에 맞게 우선순위를 바꾸는 것을 잘한다.",
+      "weights": {
+        "marketing": 1,
+        "operations": 1,
+        "sales": 1
+      }
+    },
+    {
+      "id": "q15",
+      "type": "likert",
+      "category": "data_driven",
+      "text": "숫자 기반 의사결정을 선호한다(데이터로 증명하는 것을 좋아함).",
+      "weights": {
+        "data": 3,
+        "finance": 2,
+        "strategy": 1
+      }
+    },
+    {
+      "id": "q16",
+      "type": "likert",
+      "category": "relationship",
+      "text": "고객과 관계를 장기간 유지하는 활동(고객관리)에 흥미가 있다.",
+      "weights": {
+        "sales": 2,
+        "hr": 1
+      }
+    },
+    {
+      "id": "q17",
+      "type": "likert",
+      "category": "systems",
+      "text": "문제를 시스템이나 프로세스 관점에서 해결하는 것을 선호한다.",
+      "weights": {
+        "operations": 3,
+        "strategy": 1
+      }
+    },
+    {
+      "id": "q18",
+      "type": "likert",
+      "category": "pricing",
+      "text": "제품의 가격이나 손익 구조를 고민하는 데 흥미가 있다.",
+      "weights": {
+        "finance": 2,
+        "strategy": 2
+      }
+    },
+    {
+      "id": "q19",
+      "type": "likert",
+      "category": "tools",
+      "text": "새로운 기술이나 툴(분석툴, 마케팅툴)을 배우는 것을 즐긴다.",
+      "weights": {
+        "data": 2,
+        "marketing": 2
+      }
+    },
+    {
+      "id": "q20",
+      "type": "likert",
+      "category": "collaboration",
+      "text": "외부 파트너(광고사, 제휴사 등)와 협업하고 조율하는 것을 즐긴다.",
+      "weights": {
+        "marketing": 2,
+        "sales": 1,
+        "brand": 1
+      }
+    },
+    {
+      "id": "q21",
+      "type": "likert",
+      "category": "market_analysis",
+      "text": "경쟁사나 시장 분석을 통해 전략을 세우는 것을 좋아한다.",
+      "weights": {
+        "strategy": 3,
+        "marketing": 1
+      }
+    },
+    {
+      "id": "q22",
+      "type": "likert",
+      "category": "routine",
+      "text": "직무 수행에 있어 세부 작업(루틴, 반복)이 괜찮다.",
+      "weights": {
+        "operations": 2,
+        "finance": 2
+      }
+    },
+    {
+      "id": "q23",
+      "type": "likert",
+      "category": "ux",
+      "text": "사용자를 관찰하고 UX 관점에서 개선을 제안하는 것을 즐긴다.",
+      "weights": {
+        "brand": 2,
+        "marketing": 2,
+        "data": 1
+      }
+    },
+    {
+      "id": "q24",
+      "type": "likert",
+      "category": "compliance",
+      "text": "윤리, 규제, 회계 준수 등 규정 준수를 중요하게 생각한다.",
+      "weights": {
+        "finance": 2,
+        "hr": 1,
+        "operations": 1
+      }
+    },
+    {
+      "id": "q25",
+      "type": "likert",
+      "category": "fast_feedback",
+      "text": "빠른 피드백 루프(짧은 실행 → 측정 → 개선) 사이클을 선호한다.",
+      "weights": {
+        "marketing": 2,
+        "data": 2
+      }
+    },
+    {
+      "id": "q26",
+      "type": "text",
+      "category": "background",
+      "text": "전공 또는 관심 분야를 입력해주세요 (선택사항).",
+      "placeholder": "예: 경영학과, 마케팅, 데이터 분석 등",
+      "optional": true,
+      "weights": {}
+    },
+    {
+      "id": "q27",
+      "type": "multiple_choice",
+      "category": "work_style",
+      "text": "원하는 직무 스타일을 모두 고르세요.",
+      "options": [
+        {
+          "value": "creative",
+          "label": "창의적인 업무",
+          "weights": {
+            "marketing": 2,
+            "brand": 2
+          }
+        },
+        {
+          "value": "analytical",
+          "label": "분석적인 업무",
+          "weights": {
+            "data": 2,
+            "finance": 2
+          }
+        },
+        {
+          "value": "people_oriented",
+          "label": "사람 중심 업무",
+          "weights": {
+            "hr": 2,
+            "sales": 2
+          }
+        },
+        {
+          "value": "process_management",
+          "label": "관리·운영 업무",
+          "weights": {
+            "operations": 2,
+            "finance": 1
+          }
+        },
+        {
+          "value": "sales_business",
+          "label": "영업·사업개발",
+          "weights": {
+            "sales": 3
+          }
+        }
+      ],
+      "allow_multiple": true
+    },
+    {
+      "id": "q28",
+      "type": "single_choice",
+      "category": "company_type",
+      "text": "선호하는 업무 환경을 선택해주세요.",
+      "options": [
+        {
+          "value": "startup",
+          "label": "스타트업",
+          "weights": {
+            "marketing": 1,
+            "data": 1
+          }
+        },
+        {
+          "value": "large_corp",
+          "label": "대기업",
+          "weights": {
+            "finance": 1,
+            "operations": 1
+          }
+        },
+        {
+          "value": "consulting",
+          "label": "컨설팅",
+          "weights": {
+            "strategy": 2
+          }
+        },
+        {
+          "value": "finance_sector",
+          "label": "금융사",
+          "weights": {
+            "finance": 2
+          }
+        },
+        {
+          "value": "no_preference",
+          "label": "상관없음",
+          "weights": {}
+        }
+      ]
+    },
+    {
+      "id": "q29",
+      "type": "single_choice",
+      "category": "location",
+      "text": "해외 근무 희망 여부를 선택해주세요.",
+      "options": [
+        {
+          "value": "yes",
+          "label": "예",
+          "weights": {
+            "sales": 1,
+            "strategy": 1
+          }
+        },
+        {
+          "value": "no",
+          "label": "아니오",
+          "weights": {}
+        },
+        {
+          "value": "maybe",
+          "label": "상관없음",
+          "weights": {}
+        }
+      ]
+    },
+    {
+      "id": "q30",
+      "type": "single_choice",
+      "category": "work_format",
+      "text": "선호하는 근무 형태를 선택해주세요.",
+      "options": [
+        {
+          "value": "fulltime",
+          "label": "풀타임",
+          "weights": {}
+        },
+        {
+          "value": "intern",
+          "label": "인턴",
+          "weights": {}
+        },
+        {
+          "value": "parttime",
+          "label": "파트타임",
+          "weights": {}
+        },
+        {
+          "value": "freelance",
+          "label": "프리랜서",
+          "weights": {
+            "marketing": 1
+          }
+        }
+      ]
+    }
+  ],
+  "job_categories": [
+    {
+      "id": "marketing",
+      "name": "마케팅",
+      "name_en": "Marketing",
+      "icon": "📢",
+      "description": "제품·서비스를 알리고 브랜드 이미지를 구축하는 직무"
+    },
+    {
+      "id": "hr",
+      "name": "인사/HR",
+      "name_en": "HR",
+      "icon": "👥",
+      "description": "사람을 뽑고 성장시키며 조직문화를 만드는 직무"
+    },
+    {
+      "id": "brand",
+      "name": "브랜드/상품 기획",
+      "name_en": "Brand/Product Planning",
+      "icon": "💡",
+      "description": "제품 기획과 브랜드 전략을 수립하는 직무"
+    },
+    {
+      "id": "strategy",
+      "name": "전략/기획",
+      "name_en": "Strategy/Planning",
+      "icon": "🎯",
+      "description": "회사 전체의 방향과 자원 배분을 결정하는 직무"
+    },
+    {
+      "id": "finance",
+      "name": "재무/회계",
+      "name_en": "Finance/Accounting",
+      "icon": "💰",
+      "description": "회사의 돈 흐름을 관리하고 재무 건강도를 진단하는 직무"
+    },
+    {
+      "id": "sales",
+      "name": "영업/영업관리",
+      "name_en": "Sales/Business Development",
+      "icon": "🤝",
+      "description": "고객에게 제품을 판매하고 파트너십을 구축하는 직무"
+    },
+    {
+      "id": "data",
+      "name": "데이터 분석",
+      "name_en": "Data Analytics",
+      "icon": "📊",
+      "description": "데이터를 분석하여 비즈니스 인사이트를 도출하는 직무"
+    },
+    {
+      "id": "operations",
+      "name": "운영/SCM",
+      "name_en": "Operations/SCM",
+      "icon": "⚙️",
+      "description": "효율적인 운영과 공급망 관리를 담당하는 직무"
+    }
+  ],
+  "scoring_rules": {
+    "likert_multiplier": 1,
+    "choice_bonus": 10,
+    "text_bonus": 5,
+    "normalization": "0-100",
+    "preference_weight": 0.4,
+    "fit_weight": 0.6
+  }
+}

@@ -1,0 +1,194 @@
+{
+  "spec_check_id": "hr_spec_v1",
+  "job_category": "hr",
+  "title": "인사/HR 직무 스펙체크",
+  "description": "HR 직군 내 세부 직무(채용, 교육/HRD, 조직문화, 보상, HRIS 등)를 판별하는 설문입니다.",
+  "estimated_time": "3-5분",
+  "response_type": "likert_5",
+  "subtypes": [
+    {
+      "id": "recruiting",
+      "name": "채용/리크루팅",
+      "name_en": "Recruiting",
+      "description": "인재 발굴과 채용 프로세스 운영"
+    },
+    {
+      "id": "hrd",
+      "name": "교육/HRD",
+      "name_en": "Learning & Development",
+      "description": "직원 교육과 역량 개발 프로그램 기획"
+    },
+    {
+      "id": "culture",
+      "name": "조직문화/ER",
+      "name_en": "Culture/Employee Relations",
+      "description": "조직 분위기와 직원 경험 개선"
+    },
+    {
+      "id": "compensation",
+      "name": "보상/복리후생",
+      "name_en": "Compensation & Benefits",
+      "description": "급여, 평가, 복리후생 제도 설계"
+    },
+    {
+      "id": "hris",
+      "name": "HRIS/HR 시스템",
+      "name_en": "HRIS/HR Tech",
+      "description": "HR 데이터와 시스템 관리"
+    }
+  ],
+  "questions": [
+    {
+      "id": "h1",
+      "text": "면접을 진행하거나 평가해본 경험이 있다.",
+      "weights": {
+        "recruiting": 3
+      }
+    },
+    {
+      "id": "h2",
+      "text": "채용 공고를 작성하거나 후보자 소싱을 해본 경험이 있다.",
+      "weights": {
+        "recruiting": 3
+      }
+    },
+    {
+      "id": "h3",
+      "text": "교육 프로그램이나 워크샵을 기획하고 운영해본 경험이 있다.",
+      "weights": {
+        "hrd": 3
+      }
+    },
+    {
+      "id": "h4",
+      "text": "사람들의 성장과 학습에 관심이 많다.",
+      "weights": {
+        "hrd": 2,
+        "culture": 1
+      }
+    },
+    {
+      "id": "h5",
+      "text": "팀 이벤트나 컬처 프로그램을 기획해본 경험이 있다.",
+      "weights": {
+        "culture": 3
+      }
+    },
+    {
+      "id": "h6",
+      "text": "조직 내 갈등을 중재하거나 소통을 돕는 역할을 한 적이 있다.",
+      "weights": {
+        "culture": 2,
+        "recruiting": 1
+      }
+    },
+    {
+      "id": "h7",
+      "text": "급여, 평가, 보상 제도에 대한 이해나 관심이 있다.",
+      "weights": {
+        "compensation": 3
+      }
+    },
+    {
+      "id": "h8",
+      "text": "HR 데이터를 분석하거나 리포트를 작성해본 경험이 있다.",
+      "weights": {
+        "hris": 3,
+        "compensation": 1
+      }
+    },
+    {
+      "id": "h9",
+      "text": "엑셀이나 데이터 관리 툴(스프레드시트, HRIS 등)을 능숙하게 다룬다.",
+      "weights": {
+        "hris": 2,
+        "compensation": 1
+      }
+    },
+    {
+      "id": "h10",
+      "text": "사람들의 감정이나 니즈를 빠르게 파악하는 편이다.",
+      "weights": {
+        "culture": 2,
+        "recruiting": 1
+      }
+    },
+    {
+      "id": "h11",
+      "text": "채용 트렌드나 인재 시장 동향에 관심이 많다.",
+      "weights": {
+        "recruiting": 2
+      }
+    },
+    {
+      "id": "h12",
+      "text": "직무 설명서(JD)나 역량 모델을 작성해본 경험이 있다.",
+      "weights": {
+        "recruiting": 2,
+        "hrd": 1
+      }
+    },
+    {
+      "id": "h13",
+      "text": "온보딩이나 신입 교육 프로그램을 기획해본 적이 있다.",
+      "weights": {
+        "hrd": 2,
+        "culture": 1
+      }
+    },
+    {
+      "id": "h14",
+      "text": "설문 조사나 피드백을 수집하고 분석하는 것을 즐긴다.",
+      "weights": {
+        "culture": 2,
+        "hris": 1
+      }
+    },
+    {
+      "id": "h15",
+      "text": "조직 구조나 프로세스 개선에 관심이 있다.",
+      "weights": {
+        "hris": 2,
+        "compensation": 1
+      }
+    },
+    {
+      "id": "h16",
+      "text": "법규(근로기준법 등)와 컴플라이언스를 준수하는 것이 중요하다고 생각한다.",
+      "weights": {
+        "compensation": 2,
+        "hris": 1
+      }
+    },
+    {
+      "id": "h17",
+      "text": "직원 경험(Employee Experience)을 개선하는 데 관심이 많다.",
+      "weights": {
+        "culture": 3
+      }
+    },
+    {
+      "id": "h18",
+      "text": "면접관 교육이나 채용 프로세스 개선을 해본 경험이 있다.",
+      "weights": {
+        "recruiting": 2,
+        "hrd": 1
+      }
+    },
+    {
+      "id": "h19",
+      "text": "HR Tech 도구(채용 ATS, LMS 등)를 사용해본 경험이 있다.",
+      "weights": {
+        "hris": 3
+      }
+    },
+    {
+      "id": "h20",
+      "text": "다양성·포용(DE&I) 이슈에 관심이 많다.",
+      "weights": {
+        "culture": 2,
+        "recruiting": 1
+      }
+    }
+  ]
+}
