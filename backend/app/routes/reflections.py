@@ -10,10 +10,12 @@ from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, date, timedelta
-from app.database import get_supabase
+from app.database import get_supabase, ensure_reflection_table
 from app.utils.auth import get_current_user_id
 from collections import Counter
+import logging
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # ===== Pydantic Models =====
@@ -440,21 +442,131 @@ async def get_reflection_story(
             }
         }
 
+# ===== STAR 회고 저장 엔드포인트 =====
+
+class StarReflectionCreate(BaseModel):
+    """STAR 회고 저장 요청"""
+    template_id: str
+    template_name: str
+    answers: dict  # {situation, task, action, result}
+    competencies: List[str]  # 역량명 리스트
+    competency_scores: dict  # {역량명: 점수}
+    competency_analysis: dict  # 전체 분석 결과 (evidence, reason, analysis 포함)
+
+@router.post("")
+async def create_reflection(
+    reflection_data: StarReflectionCreate,
+    user_id: str = Depends(get_current_user_id)
+):
+    """회고 저장 (모든 템플릿 지원)"""
+    try:
+        supabase = get_supabase()
+        template_id = reflection_data.template_id
+        
+        # 통합 reflections 테이블 사용 (모든 템플릿 지원)
+        table_name = await ensure_reflection_table(template_id)
+        
+        # 저장할 데이터 준비
+        insert_data = {
+            "user_id": user_id,
+            "template_id": reflection_data.template_id,
+            "template_name": reflection_data.template_name,
+            "answers": reflection_data.answers,
+            "competencies": reflection_data.competencies,
+            "competency_scores": reflection_data.competency_scores,
+            "competency_analysis": reflection_data.competency_analysis,
+            "created_at": datetime.now().isoformat()
+        }
+        
+        logger.info(f"저장 시도: 테이블={table_name}, 템플릿={template_id}, 사용자={user_id}")
+        
+        # 통합 테이블에 저장
+        response = supabase.table(table_name).insert(insert_data).execute()
+        
+        if not response.data:
+            return {
+                "success": False,
+                "data": None,
+                "error": {
+                    "code": "CREATE_FAILED",
+                    "message": "회고 저장에 실패했습니다"
+                }
+            }
+        
+        reflection = response.data[0]
+        logger.info(f"저장 성공: ID={reflection.get('id')}, 템플릿={template_id}")
+        
+        return {
+            "success": True,
+            "data": {
+                "id": reflection["id"],
+                "user_id": reflection["user_id"],
+                "template_id": reflection["template_id"],
+                "template_name": reflection["template_name"],
+                "created_at": reflection["created_at"]
+            },
+            "error": None
+        }
+    except Exception as e:
+        logger.exception("회고 저장 오류")
+        return {
+            "success": False,
+            "data": None,
+            "error": {
+                "code": "INTERNAL_ERROR",
+                "message": str(e)
+            }
+        }
+
 # ===== 이전 reflections 엔드포인트 (하위 호환성) =====
 
 @router.get("")
 async def list_reflections(
     user_id: str = Depends(get_current_user_id),
-    limit: int = Query(50, le=100)
+    limit: int = Query(50, le=100),
+    template_id: Optional[str] = None
 ):
-    """회고 목록 조회 (하위 호환)"""
-    return {
-        "success": True,
-        "data": {
-            "reflections": []
-        },
-        "error": None
-    }
+    """회고 목록 조회 (모든 템플릿 지원)"""
+    try:
+        supabase = get_supabase()
+        
+        # 통합 reflections 테이블에서 조회
+        query = supabase.table("reflections") \
+            .select("*") \
+            .eq("user_id", user_id)
+        
+        # 특정 템플릿 필터링
+        if template_id:
+            query = query.eq("template_id", template_id)
+            logger.info(f"조회: 템플릿={template_id}, 사용자={user_id}")
+        else:
+            logger.info(f"조회: 모든 템플릿, 사용자={user_id}")
+        
+        response = query \
+            .order("created_at", desc=True) \
+            .limit(limit) \
+            .execute()
+        
+        all_reflections = response.data or []
+        logger.info(f"조회 결과: {len(all_reflections)}개")
+        
+        return {
+            "success": True,
+            "data": {
+                "reflections": all_reflections
+            },
+            "error": None
+        }
+    except Exception as e:
+        logger.exception("회고 목록 조회 오류")
+        return {
+            "success": False,
+            "data": None,
+            "error": {
+                "code": "INTERNAL_ERROR",
+                "message": str(e)
+            }
+        }
 
 @router.get("/growth-stats")
 async def get_growth_stats(user_id: str = Depends(get_current_user_id)):

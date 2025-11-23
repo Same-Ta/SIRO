@@ -7,7 +7,7 @@ from app.routes import (
     evidence, endorsements, portfolios,
     reflections, recommendations, ai,
     dashboard, search, notifications, upload,
-    survey
+    survey, health, spaces
 )
 
 app = FastAPI(
@@ -32,7 +32,7 @@ app.include_router(auth.router, prefix="/auth", tags=["인증"])
 app.include_router(users.router, prefix="/users", tags=["사용자 관리"])
 app.include_router(recommendations.router, prefix="/api/recommendations", tags=["경험 활동 추천"])
 app.include_router(logs.router, prefix="/api/logs", tags=["경험 로그"])
-app.include_router(reflections.router, prefix="/api/reflections", tags=["회고 시스템"])
+app.include_router(reflections.router, prefix="/api/v1/reflections", tags=["회고 시스템"])
 app.include_router(projects.router, prefix="/api/activities", tags=["활동 관리"])
 app.include_router(keywords.router, prefix="/api/keywords", tags=["키워드 관리"])
 app.include_router(ai.router, prefix="/api/ai", tags=["AI 분석"])
@@ -44,6 +44,8 @@ app.include_router(upload.router, prefix="/api/upload", tags=["파일 업로드"
 app.include_router(evidence.router, prefix="/api/verifications", tags=["증명 및 인증"])
 app.include_router(endorsements.router, prefix="/api/endorsements", tags=["동료 인증"])
 app.include_router(survey.router, prefix="/api/v1/survey", tags=["설문"])
+app.include_router(health.router, prefix="/api/v1", tags=["헬스체크"])
+app.include_router(spaces.router, tags=["스페이스"])
 
 @app.get("/", tags=["Health Check"])
 async def root():

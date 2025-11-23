@@ -121,24 +121,13 @@ export default function DashboardLayout({
           <Link
             href="/dashboard/reflections"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-[8px] transition-all ${
-              pathname === '/dashboard/reflections'
+              pathname?.startsWith('/dashboard/reflections')
                 ? 'bg-[#25A778] text-white font-bold'
                 : 'text-white/70 hover:text-white hover:bg-white/5'
             }`}
           >
             <BookOpen className="w-4 h-4" />
-            <span className="text-sm">나의 회고</span>
-          </Link>
-          <Link
-            href="/dashboard/reflections/templates"
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-[8px] transition-all ${
-              pathname === '/dashboard/reflections/templates'
-                ? 'bg-[#25A778] text-white font-bold'
-                : 'text-white/70 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            <span className="text-sm">템플릿</span>
+            <span className="text-sm">경험정리</span>
           </Link>
           <Link
             href="/dashboard/reflections/analysis"

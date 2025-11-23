@@ -73,7 +73,7 @@ export default function ReflectionHomePage() {
           </button>
 
           <button
-            onClick={() => router.push('/dashboard/reflections/templates')}
+            onClick={() => router.push('/dashboard/spaces/new')}
             className="card hover:shadow-lg transition-all group text-left"
           >
             <div className="flex items-center gap-4">
@@ -82,9 +82,9 @@ export default function ReflectionHomePage() {
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-[#1B1C1E] mb-1">
-                  템플릿 추천
+                  팀 초대
                 </h3>
-                <p className="text-sm text-[#6B6D70]">맞춤 회고 시작</p>
+                <p className="text-sm text-[#6B6D70]">프로젝트 팀원과 경험을 공유하세요</p>
               </div>
             </div>
           </button>

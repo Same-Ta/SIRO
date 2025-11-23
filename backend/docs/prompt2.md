@@ -409,3 +409,71 @@ CREATE TABLE spec_check_results (
 - `backend/docs/prompt.md` (기존 진로봇 시스템)
 - `docs/logic.md` (프론트엔드 로직)
 - `docs/logic2.md` (신규 설문 시스템 프론트 로직)
+
+---
+
+## 8. 헬스체크 API 추가 (2024 업데이트)
+
+### 개요
+일별 사용자 건강 상태(기분/팀 상태) 추적 기능이 추가되었습니다.
+
+### 엔드포인트
+
+#### POST `/api/v1/health-check`
+사용자의 일별 헬스체크를 저장합니다 (upsert 방식).
+
+**요청 예시:**
+```json
+{
+  "user_id": "user123",
+  "health_score": 8,
+  "date": "2024-01-15"
+}
+```
+
+**응답 예시:**
+```json
+{
+  "id": "uuid",
+  "user_id": "user123",
+  "health_score": 8,
+  "date": "2024-01-15",
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-15T10:30:00Z"
+}
+```
+
+#### GET `/api/v1/health-check/latest?user_id={user_id}`
+가장 최근 헬스체크를 조회합니다.
+
+#### GET `/api/v1/health-check/history?user_id={user_id}&limit=30`
+헬스체크 히스토리를 조회합니다.
+
+### 에러 메시지
+
+**422 Validation Error:**
+```json
+{
+  "detail": "health_score must be between 1 and 10"
+}
+```
+
+**404 Not Found:**
+```json
+{
+  "detail": "No health check found for this user"
+}
+```
+
+### Supabase 테이블 스키마
+```sql
+CREATE TABLE health_checks (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id TEXT NOT NULL,
+  health_score INTEGER NOT NULL CHECK (health_score >= 1 AND health_score <= 10),
+  date DATE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, date)
+);
+```

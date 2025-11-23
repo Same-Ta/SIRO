@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Optional
 from datetime import datetime, timedelta
 from ..database import get_supabase
-from ..auth import get_current_user
+from ..utils.auth import get_current_user
 from ..schemas import (
     ReflectionSpaceCreate, 
     ReflectionSpaceResponse,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
@@ -9,6 +9,16 @@ import { Trophy, Code, Users, Briefcase, Calendar, CalendarDays, CalendarRange, 
 export default function NewSpacePage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
+  
+  // 개발 환경: localStorage에 기본 사용자 ID 설정
+  useEffect(() => {
+    if (!localStorage.getItem('x-user-id')) {
+      localStorage.setItem('x-user-id', 'dev-user-default');
+    }
+  }, []);
+  const [createdSpaceId, setCreatedSpaceId] = useState<string | null>(null);
+  const [inviteEmails, setInviteEmails] = useState<string[]>(['']);
+  const [inviting, setInviting] = useState(false);
   const [formData, setFormData] = useState({
     // Step 1: 스페이스 기본 정보
     name: '',
@@ -58,11 +68,12 @@ export default function NewSpacePage() {
 
   const createSpaceMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const response = await fetch('/api/spaces', {
+      const response = await fetch('/api/v1/spaces', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-id': localStorage.getItem('x-user-id') || '',
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          'x-user-id': localStorage.getItem('x-user-id') || 'dev-user-default',
         },
         body: JSON.stringify({
           name: data.name,
@@ -70,10 +81,8 @@ export default function NewSpacePage() {
           type: data.type,
           start_date: data.start_date,
           end_date: data.end_date,
-          reflection_settings: {
-            cycle: data.reflection_cycle,
-            enabled: data.reminder_enabled,
-          },
+          reflection_cycle: data.reflection_cycle,
+          reminder_enabled: data.reminder_enabled,
         }),
       });
 
@@ -85,7 +94,9 @@ export default function NewSpacePage() {
     },
     onSuccess: (data) => {
       toast.success('스페이스가 생성되었습니다!');
-      router.push(`/dashboard/spaces/${data.data.id}`);
+      // 백엔드에서 직접 객체를 반환하므로 data.id로 접근
+      setCreatedSpaceId(data.id);
+      setStep(3); // 팀원 초대 단계로 이동
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -108,6 +119,61 @@ export default function NewSpacePage() {
 
   const handleSubmit = () => {
     createSpaceMutation.mutate(formData);
+  };
+
+  const handleAddEmail = () => {
+    setInviteEmails([...inviteEmails, '']);
+  };
+
+  const handleEmailChange = (index: number, value: string) => {
+    const newEmails = [...inviteEmails];
+    newEmails[index] = value;
+    setInviteEmails(newEmails);
+  };
+
+  const handleRemoveEmail = (index: number) => {
+    setInviteEmails(inviteEmails.filter((_, i) => i !== index));
+  };
+
+  const handleSendInvites = async () => {
+    const validEmails = inviteEmails.filter(e => e.trim() && e.includes('@'));
+    
+    if (validEmails.length === 0) {
+      toast.error('유효한 이메일을 입력해주세요');
+      return;
+    }
+
+    setInviting(true);
+    
+    try {
+      const response = await fetch('/api/v1/invites', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          'x-user-id': localStorage.getItem('x-user-id') || 'dev-user-default',
+        },
+        body: JSON.stringify({ 
+          emails: validEmails, 
+          spaceId: createdSpaceId,
+          spaceName: formData.name 
+        })
+      });
+
+      if (!response.ok) throw new Error('초대 전송 실패');
+      
+      toast.success(`${validEmails.length}명에게 초대를 보냈습니다!`);
+      router.push(`/dashboard/spaces/${createdSpaceId}`);
+    } catch (error) {
+      console.error('Invite failed:', error);
+      toast.error('초대 전송에 실패했습니다');
+    } finally {
+      setInviting(false);
+    }
+  };
+
+  const handleSkipInvite = () => {
+    router.push(`/dashboard/spaces/${createdSpaceId}`);
   };
 
   return (
@@ -166,7 +232,7 @@ export default function NewSpacePage() {
             <div className="flex-1 h-1 bg-[#F1F2F3] mx-4">
               <div
                 className="h-full bg-[#25A778] transition-all duration-300"
-                style={{ width: step >= 2 ? '100%' : '0%' }}
+                style={{ width: step >= 2 ? '50%' : '0%' }}
               ></div>
             </div>
             <div className="flex items-center gap-2">
@@ -185,6 +251,30 @@ export default function NewSpacePage() {
                 }`}
               >
                 회고 추천
+              </span>
+            </div>
+            <div className="flex-1 h-1 bg-[#F1F2F3] mx-4">
+              <div
+                className="h-full bg-[#25A778] transition-all duration-300"
+                style={{ width: step >= 3 ? '100%' : '0%' }}
+              ></div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
+                  step >= 3
+                    ? 'bg-[#25A778] text-white'
+                    : 'bg-[#F1F2F3] text-[#6B6D70]'
+                }`}
+              >
+                3
+              </div>
+              <span
+                className={`text-sm font-medium ${
+                  step >= 3 ? 'text-[#1B1C1E]' : 'text-[#6B6D70]'
+                }`}
+              >
+                팀원 초대
               </span>
             </div>
           </div>
@@ -493,7 +583,150 @@ export default function NewSpacePage() {
               >
                 {createSpaceMutation.isPending
                   ? '생성 중...'
-                  : '스페이스 생성'}
+                  : '다음: 팀원 초대'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: 팀원 초대 */}
+        {step === 3 && (
+          <div className="space-y-6">
+            {/* 성공 배너 */}
+            <div className="card border-2 border-[#25A778]/20 bg-gradient-to-br from-[#DDF3EB] to-white">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-[#25A778] rounded-xl flex items-center justify-center">
+                  <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-[#186D50] mb-1">
+                    스페이스 생성 완료!
+                  </h3>
+                  <p className="text-sm text-[#186D50]">
+                    <strong className="text-[#1B1C1E]">{formData.name}</strong> 스페이스가 생성되었습니다.
+                    이제 팀원들을 초대해보세요!
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 팀원 초대 안내 */}
+            <div className="card">
+              <div className="flex items-center gap-3 mb-4">
+                <Users className="w-6 h-6 text-[#25A778]" />
+                <h3 className="font-bold text-[#1B1C1E]">팀원 초대하기</h3>
+              </div>
+              <p className="text-sm text-[#6B6D70] mb-4">
+                같은 스페이스에서 팀원들과 경험을 공유하고 함께 성장하세요.
+                초대는 나중에도 할 수 있습니다.
+              </p>
+
+              {/* 이메일 입력 */}
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-[#1B1C1E]">
+                  팀원 이메일
+                </label>
+                {inviteEmails.map((email, index) => (
+                  <div key={index} className="flex gap-2">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => handleEmailChange(index, e.target.value)}
+                      placeholder="teammate@example.com"
+                      className="flex-1 input-field"
+                    />
+                    {inviteEmails.length > 1 && (
+                      <button
+                        onClick={() => handleRemoveEmail(index)}
+                        className="px-3 py-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  onClick={handleAddEmail}
+                  className="text-sm text-[#25A778] hover:text-[#186D50] font-medium flex items-center gap-1"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  이메일 추가
+                </button>
+              </div>
+            </div>
+
+            {/* 초대 링크 */}
+            <div className="card bg-[#F8F9FA]">
+              <label className="block text-sm font-medium text-[#1B1C1E] mb-2">
+                또는 초대 링크 공유
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={createdSpaceId ? `${typeof window !== 'undefined' ? window.location.origin : ''}/invite/${createdSpaceId}` : ''}
+                  readOnly
+                  className="flex-1 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-600"
+                />
+                <button
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(`${window.location.origin}/invite/${createdSpaceId}`);
+                      toast.success('링크가 복사되었습니다!');
+                    } catch (err) {
+                      console.error('Failed to copy:', err);
+                    }
+                  }}
+                  className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </button>
+              </div>
+              <p className="text-xs text-[#6B6D70] mt-2">
+                이 링크를 공유하면 누구나 스페이스에 참여할 수 있습니다
+              </p>
+            </div>
+
+            {/* 버튼 */}
+            <div className="flex gap-3">
+              <button
+                onClick={handleSkipInvite}
+                className="btn-secondary flex-1"
+              >
+                나중에 초대하기
+              </button>
+              <button
+                onClick={handleSendInvites}
+                disabled={inviting || !inviteEmails.some(e => e.trim() && e.includes('@'))}
+                className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {inviting ? (
+                  '전송 중...'
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    초대 보내기
+                  </>
+                )}
               </button>
             </div>
           </div>
