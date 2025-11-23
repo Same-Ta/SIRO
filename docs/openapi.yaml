@@ -1,0 +1,1705 @@
+openapi: 3.1.0
+info:
+  title: PROOF API
+  description: PROOF 서비스 REST API 명세서
+  version: 1.0.0
+  contact:
+    name: PROOF Team
+
+servers:
+  - url: http://localhost:8000
+    description: 로컬 개발 서버
+
+tags:
+  - name: Auth
+    description: 인증 관련 API
+  - name: Users
+    description: 사용자 관련 API
+  - name: Spaces
+    description: 스페이스 관련 API
+  - name: Reflections
+    description: 회고 관련 API
+  - name: Micro Logs
+    description: 마이크로 로그 관련 API
+  - name: Activities
+    description: 활동 추천 관련 API
+  - name: Templates
+    description: 회고 템플릿 관련 API
+  - name: Job Simulation
+    description: 직무 시뮬레이션 관련 API
+  - name: Career Survey
+    description: 커리어 설문 관련 API
+
+paths:
+  # ==================== Auth ====================
+  /api/auth/register:
+    post:
+      tags:
+        - Auth
+      summary: 회원가입
+      description: 새로운 사용자를 등록합니다
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - password
+                - name
+                - email
+              properties:
+                user_id:
+                  type: string
+                  description: 사용자 ID (로그인용)
+                  example: "john_doe"
+                password:
+                  type: string
+                  description: 비밀번호
+                  example: "password123"
+                name:
+                  type: string
+                  description: 이름
+                  example: "홍길동"
+                email:
+                  type: string
+                  format: email
+                  description: 이메일
+                  example: "john@example.com"
+                university:
+                  type: string
+                  description: 대학교 (선택)
+                  example: "서울대학교"
+                major:
+                  type: string
+                  description: 전공 (선택)
+                  example: "경영학과"
+      responses:
+        '201':
+          description: 회원가입 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "회원가입이 완료되었습니다"
+                  user_id:
+                    type: string
+                    example: "john_doe"
+        '400':
+          description: 잘못된 요청
+        '409':
+          description: 이미 존재하는 사용자
+
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: 로그인
+      description: 사용자 인증을 수행합니다
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - password
+              properties:
+                user_id:
+                  type: string
+                  description: 사용자 ID
+                  example: "john_doe"
+                password:
+                  type: string
+                  description: 비밀번호
+                  example: "password123"
+      responses:
+        '200':
+          description: 로그인 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "로그인 성공"
+                  user_id:
+                    type: string
+                    example: "john_doe"
+                  name:
+                    type: string
+                    example: "홍길동"
+        '401':
+          description: 인증 실패
+
+  # ==================== Users ====================
+  /api/users/me:
+    get:
+      tags:
+        - Users
+      summary: 내 정보 조회
+      description: 현재 로그인한 사용자의 정보를 조회합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+      responses:
+        '200':
+          description: 사용자 정보
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+    patch:
+      tags:
+        - Users
+      summary: 내 정보 수정
+      description: 사용자 정보를 수정합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "홍길동"
+                university:
+                  type: string
+                  example: "서울대학교"
+                major:
+                  type: string
+                  example: "경영학과"
+      responses:
+        '200':
+          description: 수정 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  # ==================== Spaces ====================
+  /api/spaces:
+    get:
+      tags:
+        - Spaces
+      summary: 스페이스 목록 조회
+      description: 사용자의 스페이스 목록을 조회합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: status
+          in: query
+          description: 상태 필터
+          schema:
+            type: string
+            enum: [active, completed, archived]
+      responses:
+        '200':
+          description: 스페이스 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Space'
+
+    post:
+      tags:
+        - Spaces
+      summary: 스페이스 생성
+      description: 새로운 스페이스를 생성합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - type
+                - start_date
+                - end_date
+                - reflection_cycle
+              properties:
+                name:
+                  type: string
+                  description: 스페이스 이름
+                  example: "2024 마케팅 공모전"
+                type:
+                  type: string
+                  enum: [공모전, 프로젝트, 동아리, 인턴십]
+                  description: 활동 유형
+                  example: "공모전"
+                description:
+                  type: string
+                  description: 설명
+                  example: "전국 대학생 마케팅 공모전"
+                start_date:
+                  type: string
+                  format: date
+                  description: 시작일
+                  example: "2024-01-01"
+                end_date:
+                  type: string
+                  format: date
+                  description: 종료일
+                  example: "2024-03-31"
+                reflection_cycle:
+                  type: string
+                  enum: [매일, 주1회, 2주1회, 월1회]
+                  description: 회고 주기
+                  example: "주1회"
+                reminder_enabled:
+                  type: boolean
+                  description: 리마인더 활성화
+                  example: true
+                keywords:
+                  type: array
+                  items:
+                    type: string
+                  description: 키워드
+                  example: ["마케팅", "기획", "브랜딩"]
+      responses:
+        '201':
+          description: 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Space'
+
+  /api/spaces/{space_id}:
+    get:
+      tags:
+        - Spaces
+      summary: 스페이스 상세 조회
+      description: 특정 스페이스의 상세 정보를 조회합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: space_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: 스페이스 ID
+      responses:
+        '200':
+          description: 스페이스 상세 정보
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Space'
+
+    patch:
+      tags:
+        - Spaces
+      summary: 스페이스 수정
+      description: 스페이스 정보를 수정합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: space_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                status:
+                  type: string
+                  enum: [active, completed, archived]
+                reflection_cycle:
+                  type: string
+                  enum: [매일, 주1회, 2주1회, 월1회]
+                reminder_enabled:
+                  type: boolean
+      responses:
+        '200':
+          description: 수정 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Space'
+
+    delete:
+      tags:
+        - Spaces
+      summary: 스페이스 삭제
+      description: 스페이스를 삭제합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: space_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: 삭제 성공
+
+  /api/spaces/{space_id}/members:
+    get:
+      tags:
+        - Spaces
+      summary: 스페이스 멤버 목록 조회
+      description: 스페이스의 멤버 목록을 조회합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: space_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 멤버 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SpaceMember'
+
+    post:
+      tags:
+        - Spaces
+      summary: 스페이스 멤버 초대
+      description: 스페이스에 멤버를 초대합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: space_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+              properties:
+                user_id:
+                  type: string
+                  description: 초대할 사용자 ID
+                  example: "jane_doe"
+                role:
+                  type: string
+                  enum: [owner, member]
+                  default: member
+                  example: "member"
+      responses:
+        '201':
+          description: 초대 성공
+
+  # ==================== Reflections ====================
+  /api/reflections:
+    get:
+      tags:
+        - Reflections
+      summary: 회고 목록 조회
+      description: 사용자의 회고 목록을 조회합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: space_id
+          in: query
+          description: 스페이스 ID 필터
+          schema:
+            type: string
+            format: uuid
+        - name: type
+          in: query
+          description: 회고 유형 필터
+          schema:
+            type: string
+            enum: [chatbot, template, survey]
+        - name: limit
+          in: query
+          description: 조회 개수
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          description: 오프셋
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: 회고 목록
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 50
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Reflection'
+
+    post:
+      tags:
+        - Reflections
+      summary: 회고 생성
+      description: 새로운 회고를 생성합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - content
+              properties:
+                space_id:
+                  type: string
+                  format: uuid
+                  description: 스페이스 ID (선택)
+                template_id:
+                  type: string
+                  format: uuid
+                  description: 템플릿 ID (선택)
+                type:
+                  type: string
+                  enum: [chatbot, template, survey]
+                  description: 회고 유형
+                  example: "chatbot"
+                title:
+                  type: string
+                  description: 제목
+                  example: "1주차 회고"
+                content:
+                  type: object
+                  description: 회고 내용 (STAR, Q&A 등)
+                  example:
+                    situation: "팀 프로젝트에서 마케팅 전략 수립"
+                    task: "경쟁사 분석 및 포지셔닝 전략 개발"
+                    action: "시장 조사 및 SWOT 분석 수행"
+                    result: "차별화된 마케팅 전략 도출"
+                mood_before:
+                  type: string
+                  enum: [good, neutral, bad]
+                  example: "neutral"
+                mood_after:
+                  type: string
+                  enum: [good, neutral, bad]
+                  example: "good"
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  example: ["마케팅", "전략", "분석"]
+      responses:
+        '201':
+          description: 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reflection'
+
+  /api/reflections/{reflection_id}:
+    get:
+      tags:
+        - Reflections
+      summary: 회고 상세 조회
+      description: 특정 회고의 상세 정보를 조회합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: reflection_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 회고 상세 정보
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reflection'
+
+    patch:
+      tags:
+        - Reflections
+      summary: 회고 수정
+      description: 회고 내용을 수정합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: reflection_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                content:
+                  type: object
+                tags:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: 수정 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reflection'
+
+    delete:
+      tags:
+        - Reflections
+      summary: 회고 삭제
+      description: 회고를 삭제합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: reflection_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: 삭제 성공
+
+  /api/reflections/{reflection_id}/ai-feedback:
+    post:
+      tags:
+        - Reflections
+      summary: AI 피드백 생성
+      description: 회고에 대한 AI 피드백을 생성합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: reflection_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: AI 피드백 생성 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ai_feedback:
+                    type: string
+                    example: "이번 활동에서 체계적인 분석 능력을 잘 발휘하셨네요..."
+                  progress_score:
+                    type: integer
+                    example: 85
+
+  /api/reflections/stats:
+    get:
+      tags:
+        - Reflections
+      summary: 회고 통계 조회
+      description: 사용자의 회고 통계를 조회합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: period
+          in: query
+          description: 기간
+          schema:
+            type: string
+            enum: [week, month, quarter]
+            default: week
+      responses:
+        '200':
+          description: 회고 통계
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_reflections:
+                    type: integer
+                    example: 24
+                  consecutive_days:
+                    type: integer
+                    example: 7
+                  active_spaces:
+                    type: integer
+                    example: 3
+                  growth_keywords:
+                    type: array
+                    items:
+                      type: string
+                    example: ["협업", "분석", "기획"]
+                  mood_summary:
+                    type: object
+                    properties:
+                      good:
+                        type: integer
+                      neutral:
+                        type: integer
+                      bad:
+                        type: integer
+
+  /api/reflections/story:
+    get:
+      tags:
+        - Reflections
+      summary: 성장 스토리 조회
+      description: 기간별 성장 스토리를 조회합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: period
+          in: query
+          required: true
+          description: 조회 기간
+          schema:
+            type: string
+            enum: [week, month, quarter]
+      responses:
+        '200':
+          description: 성장 스토리
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  period:
+                    type: string
+                    example: "week"
+                  summary:
+                    type: string
+                    example: "이번 주에는 3개의 활동을 완료하셨습니다."
+                  activities:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        count:
+                          type: integer
+                  positive_moments:
+                    type: array
+                    items:
+                      type: string
+                  negative_moments:
+                    type: array
+                    items:
+                      type: string
+                  strengths:
+                    type: array
+                    items:
+                      type: string
+                  recommendations:
+                    type: array
+                    items:
+                      type: object
+
+  # ==================== Micro Logs ====================
+  /api/reflections/micro:
+    get:
+      tags:
+        - Micro Logs
+      summary: 마이크로 로그 목록 조회
+      description: 사용자의 마이크로 로그 목록을 조회합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 마이크로 로그 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MicroLog'
+
+    post:
+      tags:
+        - Micro Logs
+      summary: 마이크로 로그 생성
+      description: 간단한 활동 기록을 생성합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - activity_type
+                - mood
+              properties:
+                activity_type:
+                  type: string
+                  enum: [공모전, 프로젝트, 동아리, 인턴, 대외활동, 기타]
+                  example: "프로젝트"
+                memo:
+                  type: string
+                  example: "팀 미팅 진행 및 역할 분담"
+                mood:
+                  type: string
+                  enum: [good, neutral, bad]
+                  example: "good"
+                mood_reason:
+                  type: string
+                  example: "팀원들과 소통이 잘 되었음"
+      responses:
+        '201':
+          description: 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MicroLog'
+
+  /api/reflections/micro/{log_id}/tags:
+    post:
+      tags:
+        - Micro Logs
+      summary: AI 태그 생성
+      description: 마이크로 로그에 AI 태그를 생성합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: log_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: AI 태그 생성 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    type: array
+                    items:
+                      type: string
+                    example: ["협업", "소통", "리더십"]
+
+  # ==================== Templates ====================
+  /api/templates:
+    get:
+      tags:
+        - Templates
+      summary: 템플릿 목록 조회
+      description: 회고 템플릿 목록을 조회합니다
+      parameters:
+        - name: category
+          in: query
+          description: 카테고리 필터
+          schema:
+            type: string
+            enum: [전체, 기본, 심화, 감정, 분석, 정기]
+      responses:
+        '200':
+          description: 템플릿 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReflectionTemplate'
+
+  /api/templates/{template_id}:
+    get:
+      tags:
+        - Templates
+      summary: 템플릿 상세 조회
+      description: 특정 템플릿의 상세 정보를 조회합니다
+      parameters:
+        - name: template_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 템플릿 상세 정보
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReflectionTemplate'
+
+  /api/templates/recommend:
+    get:
+      tags:
+        - Templates
+      summary: 추천 템플릿 조회
+      description: 사용자에게 적합한 템플릿을 추천합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+      responses:
+        '200':
+          description: 추천 템플릿
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReflectionTemplate'
+
+  # ==================== Activities ====================
+  /api/activities:
+    get:
+      tags:
+        - Activities
+      summary: 활동 목록 조회
+      description: 추천 활동 목록을 조회합니다
+      parameters:
+        - name: category
+          in: query
+          description: 카테고리 필터
+          schema:
+            type: string
+            enum: [공모전, 대외활동, 프로젝트, 기타]
+        - name: field
+          in: query
+          description: 분야 필터
+          schema:
+            type: string
+            enum: [마케팅, 기획, 개발, 디자인, 데이터, 경영, 금융, 기타]
+        - name: search
+          in: query
+          description: 검색어
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: 정렬 기준
+          schema:
+            type: string
+            enum: [latest, deadline, popular]
+            default: latest
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: 활동 목록
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Activity'
+
+  /api/activities/{activity_id}:
+    get:
+      tags:
+        - Activities
+      summary: 활동 상세 조회
+      description: 특정 활동의 상세 정보를 조회합니다
+      parameters:
+        - name: activity_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 활동 상세 정보
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+
+  /api/activities/recommend:
+    get:
+      tags:
+        - Activities
+      summary: 맞춤 활동 추천
+      description: 사용자에게 맞춤 활동을 추천합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: 추천 활동 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    activity:
+                      $ref: '#/components/schemas/Activity'
+                    matching_score:
+                      type: integer
+                      example: 85
+                    match_reasons:
+                      type: array
+                      items:
+                        type: string
+                      example: ["관심 분야 일치", "역량 개발 기회"]
+
+  /api/activities/{activity_id}/view:
+    post:
+      tags:
+        - Activities
+      summary: 조회수 증가
+      description: 활동 조회수를 증가시킵니다
+      parameters:
+        - name: activity_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 조회수 증가 성공
+
+  # ==================== Bookmarks ====================
+  /api/bookmarks:
+    get:
+      tags:
+        - Activities
+      summary: 북마크 목록 조회
+      description: 사용자의 북마크 목록을 조회합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+      responses:
+        '200':
+          description: 북마크 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    bookmark_id:
+                      type: string
+                      format: uuid
+                    activity:
+                      $ref: '#/components/schemas/Activity'
+                    created_at:
+                      type: string
+                      format: date-time
+
+    post:
+      tags:
+        - Activities
+      summary: 북마크 추가
+      description: 활동을 북마크에 추가합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - activity_id
+              properties:
+                activity_id:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: 북마크 추가 성공
+
+  /api/bookmarks/{bookmark_id}:
+    delete:
+      tags:
+        - Activities
+      summary: 북마크 삭제
+      description: 북마크를 삭제합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: bookmark_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: 북마크 삭제 성공
+
+  # ==================== Job Simulation ====================
+  /api/job-simulation/start:
+    post:
+      tags:
+        - Job Simulation
+      summary: 직무 시뮬레이션 시작
+      description: 직무 시뮬레이션을 시작합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - department
+              properties:
+                department:
+                  type: string
+                  enum: [Business, Economics, Statistics]
+                  description: 학과
+                  example: "Business"
+      responses:
+        '200':
+          description: 시뮬레이션 시작
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_id:
+                    type: string
+                    format: uuid
+                    example: "123e4567-e89b-12d3-a456-426614174000"
+                  department:
+                    type: string
+                    example: "Business"
+                  total_questions:
+                    type: integer
+                    example: 15
+
+  /api/job-simulation/submit:
+    post:
+      tags:
+        - Job Simulation
+      summary: 시뮬레이션 답변 제출
+      description: 시뮬레이션 결과를 제출하고 분석 결과를 받습니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - session_id
+                - answers
+              properties:
+                session_id:
+                  type: string
+                  format: uuid
+                answers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      question_id:
+                        type: integer
+                      selected_option:
+                        type: integer
+      responses:
+        '200':
+          description: 결과 분석 완료
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobSimulationResult'
+
+  /api/job-simulation/results:
+    get:
+      tags:
+        - Job Simulation
+      summary: 시뮬레이션 결과 목록
+      description: 사용자의 시뮬레이션 결과 목록을 조회합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+      responses:
+        '200':
+          description: 결과 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JobSimulationResult'
+
+  /api/job-simulation/results/{result_id}:
+    get:
+      tags:
+        - Job Simulation
+      summary: 시뮬레이션 결과 상세
+      description: 특정 시뮬레이션 결과를 조회합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: result_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 결과 상세
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobSimulationResult'
+
+  # ==================== Career Survey ====================
+  /api/survey/questions:
+    get:
+      tags:
+        - Career Survey
+      summary: 설문 질문 조회
+      description: 커리어 설문 질문을 조회합니다
+      parameters:
+        - name: survey_type
+          in: query
+          required: true
+          description: 설문 유형
+          schema:
+            type: string
+            enum: [general, spec_check]
+      responses:
+        '200':
+          description: 설문 질문 목록
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  survey_type:
+                    type: string
+                  questions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        question_id:
+                          type: integer
+                        question_type:
+                          type: string
+                          enum: [likert, text, single_choice, multiple_choice]
+                        question_text:
+                          type: string
+                        options:
+                          type: array
+                          items:
+                            type: string
+
+  /api/survey/submit:
+    post:
+      tags:
+        - Career Survey
+      summary: 일반 설문 제출
+      description: 일반 커리어 설문을 제출합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - answers
+              properties:
+                answers:
+                  type: object
+                  description: 질문 ID를 키로 하는 답변 객체
+                  example:
+                    "1": "매우 그렇다"
+                    "2": "데이터 분석과 전략 수립"
+                    "3": ["협업", "분석력"]
+      responses:
+        '200':
+          description: 설문 제출 완료
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CareerSurveyResult'
+
+  /api/survey/spec-check/submit:
+    post:
+      tags:
+        - Career Survey
+      summary: 스펙 체크 설문 제출
+      description: 스펙 체크 설문을 제출합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - job
+                - answers
+              properties:
+                job:
+                  type: string
+                  description: 선택한 직무
+                  example: "마케터"
+                answers:
+                  type: object
+      responses:
+        '200':
+          description: 설문 제출 완료
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CareerSurveyResult'
+
+  /api/survey/results:
+    get:
+      tags:
+        - Career Survey
+      summary: 설문 결과 목록
+      description: 사용자의 설문 결과 목록을 조회합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+      responses:
+        '200':
+          description: 설문 결과 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CareerSurveyResult'
+
+  /api/survey/results/{survey_id}:
+    get:
+      tags:
+        - Career Survey
+      summary: 설문 결과 상세
+      description: 특정 설문 결과를 조회합니다
+      parameters:
+        - $ref: '#/components/parameters/UserIdHeader'
+        - name: survey_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 설문 결과 상세
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CareerSurveyResult'
+
+components:
+  parameters:
+    UserIdHeader:
+      name: x-user-id
+      in: header
+      required: true
+      description: 사용자 ID
+      schema:
+        type: string
+        example: "john_doe"
+
+  schemas:
+    User:
+      type: object
+      properties:
+        user_id:
+          type: string
+          example: "john_doe"
+        name:
+          type: string
+          example: "홍길동"
+        email:
+          type: string
+          example: "john@example.com"
+        university:
+          type: string
+          example: "서울대학교"
+        major:
+          type: string
+          example: "경영학과"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Space:
+      type: object
+      properties:
+        space_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+        name:
+          type: string
+          example: "2024 마케팅 공모전"
+        type:
+          type: string
+          enum: [공모전, 프로젝트, 동아리, 인턴십]
+        description:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        reflection_cycle:
+          type: string
+          enum: [매일, 주1회, 2주1회, 월1회]
+        reminder_enabled:
+          type: boolean
+        status:
+          type: string
+          enum: [active, completed, archived]
+        keywords:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    SpaceMember:
+      type: object
+      properties:
+        member_id:
+          type: string
+          format: uuid
+        space_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+        role:
+          type: string
+          enum: [owner, member]
+        joined_at:
+          type: string
+          format: date-time
+
+    Reflection:
+      type: object
+      properties:
+        reflection_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+        space_id:
+          type: string
+          format: uuid
+        template_id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [chatbot, template, survey]
+        title:
+          type: string
+        content:
+          type: object
+        ai_feedback:
+          type: string
+        progress_score:
+          type: integer
+        mood_before:
+          type: string
+          enum: [good, neutral, bad]
+        mood_after:
+          type: string
+          enum: [good, neutral, bad]
+        tags:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ReflectionTemplate:
+      type: object
+      properties:
+        template_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "KPT 회고"
+        category:
+          type: string
+          enum: [기본, 심화, 감정, 분석, 정기]
+        description:
+          type: string
+        icon:
+          type: string
+          example: "target"
+        questions:
+          type: array
+          items:
+            type: object
+            properties:
+              question:
+                type: string
+              placeholder:
+                type: string
+        recommended_situations:
+          type: array
+          items:
+            type: string
+        usage_count:
+          type: integer
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    MicroLog:
+      type: object
+      properties:
+        log_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+        activity_type:
+          type: string
+          enum: [공모전, 프로젝트, 동아리, 인턴, 대외활동, 기타]
+        memo:
+          type: string
+        mood:
+          type: string
+          enum: [good, neutral, bad]
+        mood_reason:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+
+    Activity:
+      type: object
+      properties:
+        activity_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: "2024 대학생 마케팅 공모전"
+        organization:
+          type: string
+          example: "한국마케팅협회"
+        category:
+          type: string
+          enum: [공모전, 대외활동, 프로젝트, 기타]
+        field:
+          type: string
+          enum: [마케팅, 기획, 개발, 디자인, 데이터, 경영, 금융, 기타]
+        description:
+          type: string
+        image_url:
+          type: string
+        external_url:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        tags:
+          type: array
+          items:
+            type: string
+        benefits:
+          type: array
+          items:
+            type: string
+        view_count:
+          type: integer
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    JobSimulationResult:
+      type: object
+      properties:
+        result_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+        department:
+          type: string
+          enum: [Business, Economics, Statistics]
+        scores:
+          type: object
+          description: 직무별 점수
+          example:
+            MKT: 85
+            PM: 75
+            DATA: 65
+            DEV: 45
+            DESIGN: 55
+            HR: 70
+            FIN: 60
+        top_job:
+          type: string
+          example: "마케터"
+        strengths:
+          type: array
+          items:
+            type: string
+          example: ["시장 분석 능력", "커뮤니케이션", "창의적 사고"]
+        recommendations:
+          type: array
+          items:
+            type: string
+          example: ["마케팅 공모전 참여", "브랜드 분석 프로젝트"]
+        ai_analysis:
+          type: string
+          example: "마케팅 분야에서 강점을 보이고 있습니다..."
+        completed_at:
+          type: string
+          format: date-time
+
+    CareerSurveyResult:
+      type: object
+      properties:
+        survey_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+        survey_type:
+          type: string
+          enum: [general, spec_check]
+        answers:
+          type: object
+          description: 답변 데이터
+        preference_top3:
+          type: array
+          items:
+            type: object
+            properties:
+              job:
+                type: string
+              score:
+                type: integer
+          example:
+            - job: "마케터"
+              score: 85
+            - job: "기획자"
+              score: 80
+            - job: "데이터 분석가"
+              score: 75
+        fit_top3:
+          type: array
+          items:
+            type: object
+            properties:
+              job:
+                type: string
+              score:
+                type: integer
+        recommended_job:
+          type: string
+          example: "마케터"
+        completed_at:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: 에러 코드
+          example: "INVALID_REQUEST"
+        message:
+          type: string
+          description: 에러 메시지
+          example: "잘못된 요청입니다"
+        details:
+          type: object
+          description: 추가 에러 정보
