@@ -12,7 +12,7 @@ export default function DashboardLayout({
   const pathname = usePathname()
 
   const navItems = [
-    { href: '/dashboard', label: '내 정보', Icon: User },
+    { href: '/dashboard/profile', label: '내 정보', Icon: User },
     { href: '/dashboard', label: '대시 검색', Icon: Search },
     { href: '/dashboard', label: '알림', Icon: Bell },
   ]

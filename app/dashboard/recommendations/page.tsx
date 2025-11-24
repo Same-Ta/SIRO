@@ -279,7 +279,8 @@ export default function RecommendationsPage() {
       try {
         const params = new URLSearchParams();
         if (selectedCategory !== 'all') params.append('category', selectedCategory);
-        if (selectedField !== 'all') params.append('field', selectedField);
+        // field 대신 target_job 파라미터 사용 (백엔드가 target_jobs 배열을 검색)
+        if (selectedField !== 'all') params.append('target_job', selectedField);
         params.append('sort', sortBy);
         params.append('limit', '60');  // 백엔드의 60개 데이터 모두 가져오기
         if (searchQuery) params.append('search', searchQuery);
@@ -297,28 +298,29 @@ export default function RecommendationsPage() {
           headers['x-user-id'] = userId;
         }
 
-        console.log('🔍 Fetching activities from:', `http://localhost:8000/api/recommendations/activities?${params}`);
+        console.log('🔍 Fetching activities from:', `http://localhost:8000/api/activities?${params}`);
         console.log('📋 Headers:', headers);
 
-        // 먼저 /api/activities 경로 시도
-        let url = `http://localhost:8000/api/activities?${params}`;
-        let response = await fetch(url, { headers });
+        // /api/activities 경로로 요청
+        const url = `http://localhost:8000/api/activities?${params}`;
         
-        // 404면 /api/recommendations/activities 시도
-        if (response.status === 404) {
-          console.log('⚠️ /api/activities 404, trying /api/recommendations/activities...');
-          url = `http://localhost:8000/api/recommendations/activities?${params}`;
-          response = await fetch(url, { headers });
-        }
+        const response = await fetch(url, { 
+          headers,
+          mode: 'cors',
+          credentials: 'include'
+        });
         
         console.log('📡 Final URL:', url);
-        
         console.log('📡 Response status:', response.status);
+        console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
         
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('❌ API Error:', errorText);
-          throw new Error(`백엔드 API 오류: ${response.status}. 백엔드 서버를 확인하세요.`);
+          console.error('❌ API Error Response:', errorText);
+          console.error('❌ Response status:', response.status);
+          console.error('❌ Response statusText:', response.statusText);
+          
+          throw new Error(`API 오류 (${response.status}): ${response.statusText}\n상세: ${errorText.substring(0, 200)}`);
         }
         
         const data = await response.json();
@@ -335,7 +337,21 @@ export default function RecommendationsPage() {
         
         return data;
       } catch (err) {
-        console.error('❌ Fetch error:', err);
+        console.error('❌ Fetch error details:', {
+          message: err instanceof Error ? err.message : String(err),
+          name: err instanceof Error ? err.name : 'Unknown',
+          stack: err instanceof Error ? err.stack : undefined
+        });
+        
+        // CORS 에러인 경우 더 명확한 메시지
+        if (err instanceof TypeError && err.message.includes('fetch')) {
+          console.error('🚫 CORS 또는 네트워크 에러 가능성 높음');
+          console.error('백엔드 서버 확인 사항:');
+          console.error('1. 서버가 8000 포트에서 실행 중인가?');
+          console.error('2. CORS 설정이 되어 있는가?');
+          console.error('3. allow_origins에 http://localhost:3000이 포함되어 있는가?');
+        }
+        
         throw err;
       }
     },

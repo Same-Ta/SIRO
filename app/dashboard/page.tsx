@@ -48,18 +48,21 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#F1F2F3]">
+    <div className="min-h-screen bg-[#F5F6FA]">
       {/* Header */}
-      <div className="bg-white px-8 py-6 mb-6">
+      <div className="bg-white border-b border-gray-200 px-8 py-6 mb-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-[#1B1C1E]">내 공고</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">내 공고</h1>
+            <p className="text-sm text-gray-500 mt-1">진행중인 채용 공고를 관리하세요</p>
+          </div>
           <div className="flex items-center gap-3">
-            <button className="px-4 py-2 bg-white border border-[#EAEBEC] rounded-[12px] text-sm font-medium text-[#1B1C1E] hover:border-[#25A778] transition-all">
+            <button className="px-5 py-2.5 bg-white border-2 border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:border-indigo-300 hover:bg-gray-50 transition-all">
               내 정보 가져오기
             </button>
             <Link 
               href="/dashboard/spaces/new"
-              className="px-4 py-2 bg-[#25A778] text-white rounded-[12px] text-sm font-bold hover:bg-[#2DC98E] transition-all"
+              className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl text-sm font-bold hover:shadow-lg transition-all"
             >
               + 새 스페이스
             </Link>
@@ -69,57 +72,58 @@ export default function DashboardPage() {
 
       <div className="px-8 pb-8">
         {/* Section Header */}
-        <div className="mb-4">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-1.5 h-1.5 bg-[#25A778] rounded-full"></div>
-            <h2 className="text-base font-bold text-[#1B1C1E]">현재 진행중인 공고 모아보기</h2>
-          </div>
+        <div className="mb-6">
+          <h2 className="text-lg font-bold text-gray-900">현재 진행중인 공고 모아보기</h2>
         </div>
 
         {/* Logs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
           {mockLogs.map((log) => (
             <div 
               key={log.id} 
-              className="bg-white rounded-[16px] p-5 border border-[#EAEBEC] hover:border-[#25A778] transition-all cursor-pointer"
+              className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-indigo-200 transition-all cursor-pointer"
             >
               {/* Project Badge */}
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-[#25A778] rounded-[2px]"></div>
-                  <span className="text-xs font-bold text-[#25A778]">{log.project}</span>
+                  <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
+                  <span className="text-sm font-bold text-indigo-600">{log.project}</span>
                 </div>
-                <button className="text-[#1B1C1E]/30 hover:text-[#1B1C1E]/60 text-lg">⋮</button>
+                <button className="text-gray-400 hover:text-gray-600">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                  </svg>
+                </button>
               </div>
 
               {/* Date Badge */}
-              <div className="mb-3">
-                <span className="inline-block px-2.5 py-1 bg-[#DDF3EB] text-[#186D50] rounded-[6px] text-xs font-bold">
+              <div className="mb-4">
+                <span className="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-semibold">
                   {log.date}
                 </span>
               </div>
 
               {/* Title */}
-              <h3 className="font-bold text-sm text-[#1B1C1E] mb-2 line-clamp-2 min-h-[40px]">
+              <h3 className="font-bold text-base text-gray-900 mb-3 line-clamp-2 min-h-[48px]">
                 {log.title}
               </h3>
 
               {/* Period */}
-              <div className="mb-3">
-                <span className="text-xs text-[#1B1C1E]/50 font-medium">{log.period}</span>
+              <div className="mb-4">
+                <span className="text-sm text-gray-500 font-medium">{log.period}</span>
               </div>
 
               {/* Keywords */}
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 {log.keywords.map((keyword, index) => (
                   <span 
                     key={index} 
-                    className={`px-2 py-1 rounded-[6px] text-xs font-medium ${
+                    className={`px-3 py-1 rounded-lg text-xs font-medium ${
                       index % 3 === 0 
-                        ? 'bg-[#E8F1FF] text-[#418CC3]' 
+                        ? 'bg-blue-50 text-blue-700' 
                         : index % 3 === 1 
-                        ? 'bg-[#F0E8FF] text-[#9C6BB3]'
-                        : 'bg-[#FFF3C2] text-[#D77B0F]'
+                        ? 'bg-purple-50 text-purple-700'
+                        : 'bg-pink-50 text-pink-700'
                     }`}
                   >
                     {keyword}
@@ -131,37 +135,38 @@ export default function DashboardPage() {
         </div>
 
         {/* All Logs Section */}
-        <div className="mb-4 mt-8">
+        <div className="mb-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-[#25A778] rounded-full"></div>
-              <h2 className="text-base font-bold text-[#1B1C1E]">모든 공고</h2>
-            </div>
-            <button className="text-xs text-[#1B1C1E]/50 font-medium hover:text-[#1B1C1E]/70">
+            <h2 className="text-lg font-bold text-gray-900">모든 공고</h2>
+            <button className="text-sm text-gray-500 font-medium hover:text-gray-700">
               간략히 보기
             </button>
           </div>
         </div>
 
         {/* All Logs List */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           {mockLogs.slice(0, 3).map((log) => (
             <div 
               key={log.id}
-              className="bg-white rounded-[12px] px-5 py-4 border border-[#EAEBEC] hover:border-[#25A778] transition-all cursor-pointer"
+              className="bg-white rounded-xl px-6 py-4 shadow-sm border border-gray-100 hover:shadow-md hover:border-indigo-200 transition-all cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4 flex-1">
-                  <span className="text-xs font-medium text-[#1B1C1E]/50 w-20">{log.date}</span>
+                <div className="flex items-center gap-6 flex-1">
+                  <span className="text-sm font-medium text-gray-500 w-24">{log.date}</span>
                   <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#25A778] rounded-[2px]"></div>
-                    <span className="text-xs font-bold text-[#25A778] w-28">{log.project}</span>
+                    <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
+                    <span className="text-sm font-bold text-indigo-600 w-32">{log.project}</span>
                   </div>
-                  <h3 className="font-bold text-sm text-[#1B1C1E] flex-1">{log.title}</h3>
+                  <h3 className="font-bold text-sm text-gray-900 flex-1">{log.title}</h3>
                 </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-xs text-[#1B1C1E]/50 font-medium">{log.period}</span>
-                  <button className="text-[#1B1C1E]/30 hover:text-[#1B1C1E]/60 text-lg">⋮</button>
+                <div className="flex items-center gap-6">
+                  <span className="text-sm text-gray-500 font-medium">{log.period}</span>
+                  <button className="text-gray-400 hover:text-gray-600">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
