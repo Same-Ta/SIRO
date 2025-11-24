@@ -6,7 +6,7 @@
 - Story View (스토리 생성)
 """
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, date, timedelta
@@ -28,6 +28,7 @@ class MicroLogCreate(BaseModel):
     reason: Optional[str] = None  # positive_001~006 | negative_001~006
     tags: Optional[List[str]] = []
     date: date
+    space_id: Optional[str] = None  # 스페이스 연동
 
 # ===== Micro Log Endpoints =====
 
@@ -91,7 +92,8 @@ async def create_micro_log(
             "mood_compare": log_data.mood_compare,
             "reason": log_data.reason,
             "tags": log_data.tags or [],
-            "date": str(log_data.date)
+            "date": str(log_data.date),
+            "space_id": log_data.space_id
         }
         
         response = supabase.table("micro_logs").insert(insert_data).execute()
@@ -132,6 +134,29 @@ async def create_micro_log(
                 "message": str(e)
             }
         }
+
+
+@router.delete("/micro/{log_id}")
+async def delete_micro_log(
+    log_id: str,
+    user_id: str = Depends(get_current_user_id)
+):
+    """단일 마이크로 로그 삭제"""
+    try:
+        supabase = get_supabase()
+        # 소유자 확인 및 삭제
+        check = supabase.table("micro_logs").select("id, user_id").eq("id", log_id).single().execute()
+        if not check.data:
+            raise HTTPException(status_code=404, detail="마이크로 로그를 찾을 수 없습니다")
+        if check.data.get("user_id") != user_id:
+            raise HTTPException(status_code=403, detail="삭제 권한이 없습니다")
+
+        res = supabase.table("micro_logs").delete().eq("id", log_id).eq("user_id", user_id).execute()
+        return {"success": True, "data": {"id": log_id}, "error": None}
+    except HTTPException:
+        raise
+    except Exception as e:
+        return {"success": False, "data": None, "error": {"code": "INTERNAL_ERROR", "message": str(e)}}
 
 @router.get("/micro")
 async def get_micro_logs(
@@ -567,6 +592,33 @@ async def list_reflections(
                 "message": str(e)
             }
         }
+
+
+@router.delete("/{reflection_id}")
+async def delete_reflection(
+    reflection_id: str,
+    user_id: str = Depends(get_current_user_id)
+):
+    """단일 AI 회고(Reflection) 삭제"""
+    try:
+        supabase = get_supabase()
+
+        # 소유자 확인
+        check = supabase.table("reflections").select("id, user_id").eq("id", reflection_id).single().execute()
+        if not check.data:
+            raise HTTPException(status_code=404, detail="회고를 찾을 수 없습니다")
+        if check.data.get("user_id") != user_id:
+            raise HTTPException(status_code=403, detail="삭제 권한이 없습니다")
+
+        # 삭제
+        supabase.table("reflections").delete().eq("id", reflection_id).eq("user_id", user_id).execute()
+
+        return {"success": True, "data": {"id": reflection_id}, "error": None}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("회고 삭제 오류")
+        return {"success": False, "data": None, "error": {"code": "INTERNAL_ERROR", "message": str(e)}}
 
 @router.get("/growth-stats")
 async def get_growth_stats(user_id: str = Depends(get_current_user_id)):
